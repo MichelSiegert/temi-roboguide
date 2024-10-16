@@ -1,8 +1,10 @@
 package de.fhkiel.temi.robogguide.database
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
@@ -23,12 +25,12 @@ class DatabaseHelper(context: Context, private val databaseName: String) : SQLit
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {}
 
     @Suppress("unused")
-    fun getDatabase(): SQLiteDatabase?{
+    fun getDatabase(): SQLiteDatabase? {
         return database
     }
 
     @Suppress("unused")
-    fun getDBFile(): File?{
+    fun getDBFile(): File? {
         return dbFile
     }
 
@@ -61,7 +63,7 @@ class DatabaseHelper(context: Context, private val databaseName: String) : SQLit
      * @param withOpen  Set to false, to only copy the database, otherwise it is also opened (default)
      */
     @Throws(IOException::class)
-    fun initializeDatabase(withOpen: Boolean = true){
+    fun initializeDatabase(withOpen: Boolean = true) {
         this.readableDatabase // Create an empty database in the default system path
         dbFile = copyDatabase() // Overwrite the existing database with the one from assets
 
@@ -72,7 +74,8 @@ class DatabaseHelper(context: Context, private val databaseName: String) : SQLit
 
     // Method to open the copied database and store its reference
     private fun openDatabase(): SQLiteDatabase? {
-        database = SQLiteDatabase.openDatabase(databaseFullPath, null, SQLiteDatabase.OPEN_READWRITE)
+        database =
+            SQLiteDatabase.openDatabase(databaseFullPath, null, SQLiteDatabase.OPEN_READWRITE)
         return database
     }
 
@@ -149,11 +152,99 @@ class DatabaseHelper(context: Context, private val databaseName: String) : SQLit
         return jsonMap
     }
 
+    @SuppressLint("Range")
+    fun getTextsOf(location: String, isAusführlich: Boolean): Array<Pair<String, String>> {
+        val resultList = mutableListOf<Pair<String, String>>() // To store the results
 
-    @Suppress("unused")
-    fun saveDataToTable() {
-        database?.let { db ->{
-            db.rawQuery("INSERT INTO texts (title,text,detailed)", null)
-        } }
+        database?.let { db ->
+            val cursor = db.rawQuery(
+                "SELECT texts.text, texts.title " +
+                        "FROM locations " +
+                        "INNER JOIN texts ON texts.locations_id = locations.id " +
+                        "WHERE LOWER(locations.name) = LOWER( ? ) AND " +
+                        "texts.detailed = ? ",
+                arrayOf(location, if(isAusführlich.toString() == "true" )"1" else "0")
+            )
+
+
+            if (cursor == null || cursor.count == 0) {
+                Log.i("Robot",location)
+                cursor?.close()
+                return arrayOf()
+            }
+
+            if (cursor.moveToFirst()) {
+                do {
+                    val text =
+                        cursor.getString(cursor.getColumnIndex("text"))
+                    val title =
+                        cursor.getString(cursor.getColumnIndex("title"))
+                    resultList.add(Pair(text, title))
+                } while (cursor.moveToNext())
+            }
+
+            cursor.close()
+        }
+        return    resultList.toTypedArray()
+    }
+
+    @SuppressLint("Range")
+    fun getAllTransfers(): Array<Pair<String, String>> {
+        val resultList = mutableListOf<Pair<String, String>>()
+
+        database?.let { db ->
+            val cursor = db.rawQuery(
+                "SELECT location_from, location_to " +
+                        "FROM transfers;", arrayOf()
+            )
+
+
+            if (cursor == null || cursor.count == 0) {
+                cursor?.close()
+                return arrayOf()
+            }
+
+            if (cursor.moveToFirst()) {
+                do {
+                    val text =
+                        cursor.getString(cursor.getColumnIndex("location_from"))
+                    val title =
+                        cursor.getString(cursor.getColumnIndex("location_to"))
+                    resultList.add(Pair(text, title))
+                } while (cursor.moveToNext())
+            }
+
+            cursor.close()
+        }
+        return resultList.toTypedArray()
+    }
+
+    @SuppressLint("Range")
+    fun getAllImportantStations(): Array<String> {
+        val resultList = mutableListOf<String>()
+
+        database?.let { db ->
+            val cursor = db.rawQuery(
+                "SELECT name " +
+                        "FROM locations " +
+                        "WHERE important=1;", arrayOf()
+            )
+
+            Log.i("wee", cursor.toString())
+            if (cursor == null || cursor.count == 0) {
+                cursor?.close()
+                return arrayOf()
+            }
+
+            if (cursor.moveToFirst()) {
+                do {
+                    resultList.add(cursor.getString(cursor.getColumnIndex("name"))
+                    )
+                } while (cursor.moveToNext())
+            }
+
+            cursor.close()
+        }
+        return resultList.toTypedArray()
     }
 }

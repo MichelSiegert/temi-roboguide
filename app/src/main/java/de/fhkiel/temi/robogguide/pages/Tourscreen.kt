@@ -7,28 +7,26 @@ import android.widget.TextView
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.TtsRequest
 import de.fhkiel.temi.robogguide.R
+import de.fhkiel.temi.robogguide.database.DatabaseHelper
 import de.fhkiel.temi.robogguide.triplogic.RoundTrip
 
 class Tourscreen(private val context: Activity,
                  private val robot: Robot,
                  private val handleInitScreen: () -> Unit,
-                 private val allStations: Boolean= false,
+                 private val database: DatabaseHelper,
                  private val isAusführlich: Boolean = false,
                  private val locations : List<String> = robot.locations,
-                 private val isIndividual: Boolean = false
 ) {
-
      fun handleTourScreen() {
         context.setContentView(R.layout.tour_screen)
         val bar = context.findViewById<ProgressBar>(R.id.progressBar)
 
-        val trip = RoundTrip(robot, bar, allStations, isAusführlich, isIndividual, 0, locations, context)
+        val trip = RoundTrip(robot, 0, locations, context)
         robot.addOnGoToLocationStatusChangedListener(trip)
+         updateText(trip);
 
-         val text = context.findViewById<TextView>(R.id.error_text);
 
-
-        val backButton = context.findViewById<Button>(R.id.backbutton)
+         val backButton = context.findViewById<Button>(R.id.backbutton)
         backButton.setOnClickListener {
             handleBackAction(trip)
             handleInitScreen()
@@ -36,9 +34,16 @@ class Tourscreen(private val context: Activity,
 
         val continueButton = context.findViewById<Button>(R.id.continuebutton)
         continueButton.setOnClickListener{
+
             robot.cancelAllTtsRequests();
-            trip.index = (trip.index+1) % locations.size
+            val index = trip.index+1
+            if(index == locations.size){
+                //end screen I guess?
+            }
+            trip.index = index % locations.size
+            bar.progress = trip.index * 100 / locations.size
             robot.goTo(locations[trip.index]);
+            updateText(trip)
         }
     }
 
@@ -52,5 +57,11 @@ class Tourscreen(private val context: Activity,
             isShowOnConversationLayer = false
         )
         robot.speak(ttsRequest)
+    }
+
+    private fun updateText(trip: RoundTrip){
+        val textPair = database.getTextsOf(locations[trip.index], isAusführlich)
+        context.findViewById<TextView>(R.id.text_view).text = textPair[0].first
+        context.findViewById<TextView>(R.id.title_view).text = textPair[0].second
     }
 }

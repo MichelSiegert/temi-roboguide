@@ -11,6 +11,7 @@ import de.fhkiel.temi.robogguide.database.DatabaseHelper
 import de.fhkiel.temi.robogguide.pages.InitialScreen
 import java.io.IOException
 
+
 // ADB Connect (ip address)
     class MainActivity : AppCompatActivity(), OnRobotReadyListener {
     private var mRobot: Robot? = null
@@ -26,21 +27,6 @@ import java.io.IOException
 
         try {
             database.initializeDatabase() // Initialize the database and copy it from assets
-
-            /*
-            // EXAMPLE CODE TO ONLY COPY DATABASE TO DIRECTLY USE THE DATABASE FILE
-            database.initializeDatabase(withOpen = false)
-            val dbFile = database.getDBFile()
-            val sqLiteDatabase = database.getDatabase()
-            */
-
-            val places = database.getTableDataAsJson("places") // Fetch data as JSON
-            val locations = database.getTableDataAsJson("locations") // Fetch data as JSON
-            val texts = database.getTableDataAsJson("texts") // Fetch data as JSON
-
-            Log.i("MainActivity", "Places: $places")
-            Log.i("MainActivity", "Locations: $locations")
-            Log.i("texts", "Locations: $texts")
 
         } catch (e: IOException) {
             e.printStackTrace()
@@ -72,11 +58,11 @@ import java.io.IOException
             val activityInfo: ActivityInfo = packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA)
             Robot.getInstance().onStart(activityInfo)
             mRobot?.let { robot-> run {
-                val initScreen: InitialScreen = InitialScreen(this,  robot);
-                initScreen.handleInitScreen();
+                Log.i("Robot", database.getTextsOf(robot.locations[0], false)[0].toString())
+                val initScreen = InitialScreen(this,  robot, database)
+                initScreen.handleInitScreen()
             } }
             Log.i("Robot", mRobot?.locations.toString())
-            //mRobot?.goTo(mRobot?.locations?.get(0) ?: "");
 
         }
     }
