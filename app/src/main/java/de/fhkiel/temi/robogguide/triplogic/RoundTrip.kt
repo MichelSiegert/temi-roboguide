@@ -2,7 +2,6 @@ package de.fhkiel.temi.robogguide.triplogic
 
 import android.app.Activity
 import android.util.Log
-import android.widget.ProgressBar
 import android.widget.TextView
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.TtsRequest

@@ -6,4 +6,9 @@
     <string name="btnCancelSpeak" translatable="false">Cancel Speak</string>
     <string name="btnGotoHomeBase" translatable="false">Goto Home Base</string>
     <string name="btnExit" translatable="false">Exit App</string>
+    <string name="bewetung_hinterlassen">Bewetung hinterlassen</string>
+    <string name="wie_war_die_tour">Wie war die Tour?</string>
+    <string name="it_was_ok">It was OK.</string>
+    <string name="it_was_good">Es war gut!</string>
+    <string name="es_war_schlecht">Es war schlecht!</string>
 </resources>

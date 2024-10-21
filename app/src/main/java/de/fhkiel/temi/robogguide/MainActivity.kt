@@ -53,16 +53,18 @@ import java.io.IOException
     override fun onRobotReady(isReady: Boolean) {
         if (isReady){
             mRobot = Robot.getInstance()
+            mRobot?.toggleNavigationBillboard(true)
+
             mRobot?.hideTopBar()
 
             val activityInfo: ActivityInfo = packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA)
             Robot.getInstance().onStart(activityInfo)
             mRobot?.let { robot-> run {
+
                 Log.i("Robot", database.getTextsOf(robot.locations[0], false)[0].toString())
                 val initScreen = InitialScreen(this,  robot, database)
-                initScreen.handleInitScreen()
+                 initScreen.handleInitScreen()
             } }
-            Log.i("Robot", mRobot?.locations.toString())
 
         }
     }

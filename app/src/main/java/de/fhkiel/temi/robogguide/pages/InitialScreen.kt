@@ -14,10 +14,14 @@ class InitialScreen(
     private val database: DatabaseHelper) {
 
     fun handleInitScreen() {
-        val route = calculateRoute()
-        val importantRoute = calculateImportantRoute(route.toTypedArray())
+
+        val map = database.getLocationMap();
+        val route = (calculateRoute()).map { map[it]!! }.filter{ robot.locations.contains(it)}
+
+        val importantRoute = (calculateImportantRoute(route.toTypedArray()))
 
         context.setContentView(R.layout.first_screen)
+        Log.i("weee", map.toString())
 
         context.findViewById<Button>(R.id.individual)?.setOnClickListener {
             robot.let {
@@ -44,7 +48,7 @@ class InitialScreen(
         }
     }
 
-    fun calculateRoute(): List<String> {
+    private fun calculateRoute(): List<String> {
         val transfers  =database.getAllTransfers()
         transfers.shuffle()
         val locationToSet = transfers.map { it.second }.toSet()
@@ -67,7 +71,7 @@ class InitialScreen(
         return route.toList()
     }
 
-    fun calculateImportantRoute(route: Array<String>): List<String> {
+    private fun calculateImportantRoute(route: Array<String>): List<String> {
         val locations  =database.getAllImportantStations()
         val importantRoute = route.filter { locations.contains(it) }
         return importantRoute

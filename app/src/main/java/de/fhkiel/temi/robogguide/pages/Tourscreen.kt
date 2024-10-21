@@ -38,12 +38,14 @@ class Tourscreen(private val context: Activity,
             robot.cancelAllTtsRequests();
             val index = trip.index+1
             if(index == locations.size){
-                //end screen I guess?
+                val eval = EvalScreen(context, robot, database)
+                eval.initScreen()
+            } else {
+                trip.index = index % locations.size
+                bar.progress = trip.index * 100 / locations.size
+                robot.goTo(locations[trip.index]);
+                updateText(trip)
             }
-            trip.index = index % locations.size
-            bar.progress = trip.index * 100 / locations.size
-            robot.goTo(locations[trip.index]);
-            updateText(trip)
         }
     }
 

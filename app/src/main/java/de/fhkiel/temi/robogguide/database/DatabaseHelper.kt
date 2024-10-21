@@ -220,6 +220,37 @@ class DatabaseHelper(context: Context, private val databaseName: String) : SQLit
     }
 
     @SuppressLint("Range")
+    fun getLocationMap(): Map<String, String>{
+        val resultList = mutableMapOf<String,String>()
+
+        database?.let { db ->
+            val cursor = db.rawQuery(
+                "SELECT id, name " +
+                        "FROM locations;", arrayOf()
+            )
+
+
+            if (cursor == null || cursor.count == 0) {
+                cursor?.close()
+                return mapOf()
+            }
+
+            if (cursor.moveToFirst()) {
+                do {
+                    val text =
+                        cursor.getString(cursor.getColumnIndex("id"))
+                    val title =
+                        cursor.getString(cursor.getColumnIndex("name"))
+                    resultList[text] = title
+                } while (cursor.moveToNext())
+            }
+
+            cursor.close()
+        }
+        return resultList.toMap()
+    }
+
+    @SuppressLint("Range")
     fun getAllImportantStations(): Array<String> {
         val resultList = mutableListOf<String>()
 
