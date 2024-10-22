@@ -1,7 +1,6 @@
 package de.fhkiel.temi.robogguide.pages
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Button
 import com.robotemi.sdk.Robot
 import de.fhkiel.temi.robogguide.R
@@ -16,12 +15,10 @@ class InitialScreen(
     fun handleInitScreen() {
 
         val map = database.getLocationMap();
-        val route = (calculateRoute()).map { map[it]!! }.filter{ robot.locations.contains(it)}
+        val route = calculateRoute(map)
 
         val importantRoute = (calculateImportantRoute(route.toTypedArray()))
-
         context.setContentView(R.layout.first_screen)
-        Log.i("weee", map.toString())
 
         context.findViewById<Button>(R.id.individual)?.setOnClickListener {
             robot.let {
@@ -34,23 +31,27 @@ class InitialScreen(
             val tourScreen = Tourscreen(context, robot, ::handleInitScreen, database, false, route)
             tourScreen.handleTourScreen()
         }
+
         context.findViewById<Button>(R.id.easyshort).setOnClickListener {
             val tourScreen = Tourscreen(context, robot, ::handleInitScreen,database,  false, importantRoute)
             tourScreen.handleTourScreen()
         }
+
         context.findViewById<Button>(R.id.advancedlong).setOnClickListener {
             val tourScreen = Tourscreen(context, robot, ::handleInitScreen, database, true, route)
             tourScreen.handleTourScreen()
         }
+
         context.findViewById<Button>(R.id.advancedshort).setOnClickListener {
             val tourScreen = Tourscreen(context, robot, ::handleInitScreen, database, true, importantRoute)
             tourScreen.handleTourScreen()
         }
     }
 
-    private fun calculateRoute(): List<String> {
-        val transfers  =database.getAllTransfers()
+    private fun calculateRoute(map: Map<String, String>): List<String> {
+        var transfers  =database.getAllTransfers()
         transfers.shuffle()
+        transfers = transfers.map { Pair(map[it.first]!!, map[it.second]!!) }.filter { robot.locations.contains(it.first) ||  robot.locations.contains(it.second)  }.toTypedArray()
         val locationToSet = transfers.map { it.second }.toSet()
         val startLocation = transfers.map { it.first }
             .filterNot { locationToSet.contains(it) }[0]

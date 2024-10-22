@@ -61,7 +61,7 @@ import java.io.IOException
             Robot.getInstance().onStart(activityInfo)
             mRobot?.let { robot-> run {
 
-                Log.i("Robot", database.getTextsOf(robot.locations[0], false)[0].toString())
+                Log.i("Robot", database.getTextsOfLocation(robot.locations[0], false)[0].toString())
                 val initScreen = InitialScreen(this,  robot, database)
                  initScreen.handleInitScreen()
             } }

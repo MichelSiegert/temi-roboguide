@@ -6,29 +6,42 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <View
+        android:id="@+id/rectangle_at_the_top"
+        android:layout_width="1928dp"
+        android:layout_height="174dp"
+        android:layout_alignParentTop="true"
+        android:background="#126416"
+        android:visibility="visible" />
+
     <TextView
         android:id="@+id/title_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CAU Kiel"
+        android:textColor="#FFFFFF"
         android:textSize="48sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/iv"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.145"
+        app:layout_constraintHorizontal_bias="0.467"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintVertical_bias="0.153" />
 
     <TextView
         android:id="@+id/text_view"
-        android:layout_width="1415dp"
-        android:layout_height="451dp"
+        android:layout_width="1360dp"
+        android:layout_height="168dp"
+        android:fadeScrollbars="true"
+        android:isScrollContainer="true"
         android:text="Die Fachhochschule (FH) Kiel mag durch ihre praxisorientierte Ausbildung und Unternehmenskooperationen punkten, doch im Vergleich zur traditionsreichen Christian-Albrechts-Universität zu Kiel (CAU) kann sie in einigen wesentlichen Bereichen nicht mithalten. Die CAU, gegründet 1665, bietet eine breite akademische Ausbildung und ist führend in der Forschung, besonders in den Natur- und Geisteswissenschaften sowie der Medizin. Während die FH Kiel sich auf anwendungsorientierte Studiengänge konzentriert, profitieren CAU-Studierende von tiefgehender theoretischer Bildung und einer vielfältigen Auswahl an Studienfächern. Zudem öffnet die CAU durch ihre internationale Vernetzung und forschungsorientierte Ausrichtung Türen für akademische Karrieren und wissenschaftliche Exzellenz, was ihr im Vergleich zur FH Kiel einen klaren Vorteil verschafft."
-        android:textSize="20sp"
+        android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.467"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.732" />
 
     <TextView
         android:id="@+id/error_text"
@@ -37,45 +50,70 @@
         android:textSize="48sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.451"
+        app:layout_constraintHorizontal_bias="0.479"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.896" />
+        app:layout_constraintVertical_bias="0.168" />
+
 
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="1194dp"
         android:layout_height="36dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:progress="0"
+        android:progressTint="#DFFF80"
+        app:layout_constraintBottom_toTopOf="@+id/iv"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.59"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.092" />
+        app:layout_constraintHorizontal_bias="0.433"
+        app:layout_constraintStart_toStartOf="@+id/rectangle_at_the_top"
+        app:layout_constraintTop_toBottomOf="@+id/title_view"
+        app:layout_constraintVertical_bias="0.108" />
 
-    <Button
+    <ImageButton
         android:id="@+id/backbutton"
-        android:layout_width="247dp"
-        android:layout_height="156dp"
-        android:text="Tour Abbrechen"
+        android:layout_width="157dp"
+        android:layout_height="171dp"
+        android:backgroundTint="#00FFFFFF"
+        android:scaleType="fitStart"
+        android:src="@drawable/backarrow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.003"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
-    <Button
+    <ImageButton
         android:id="@+id/continuebutton"
-        android:layout_width="247dp"
-        android:layout_height="156dp"
-        android:text="Weiter"
+        android:layout_width="157dp"
+        android:layout_height="171dp"
+        android:backgroundTint="#00FFFFFF"
+        android:scaleType="fitStart"
+        android:src="@drawable/forward"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.849"
+        app:layout_constraintHorizontal_bias="0.968"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view"
+        app:layout_constraintVertical_bias="0.602" />
+
+    <HorizontalScrollView
+        android:id="@+id/iv"
+        android:layout_width="1355dp"
+        android:layout_height="342dp"
+        app:layout_constraintBottom_toTopOf="@+id/text_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.463"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.897" />
+        app:layout_constraintVertical_bias="1.0">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/img">
+        </LinearLayout>
+    </HorizontalScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

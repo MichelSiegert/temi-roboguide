@@ -153,19 +153,19 @@ class DatabaseHelper(context: Context, private val databaseName: String) : SQLit
     }
 
     @SuppressLint("Range")
-    fun getTextsOf(location: String, isAusführlich: Boolean): Array<Pair<String, String>> {
-        val resultList = mutableListOf<Pair<String, String>>() // To store the results
+    fun getTextsOfLocation(location: String, isAusführlich: Boolean): Array<List<String>> {
+        val resultList = mutableListOf<List<String>>() // To store the results
 
         database?.let { db ->
             val cursor = db.rawQuery(
-                "SELECT texts.text, texts.title " +
-                        "FROM locations " +
-                        "INNER JOIN texts ON texts.locations_id = locations.id " +
-                        "WHERE LOWER(locations.name) = LOWER( ? ) AND " +
-                        "texts.detailed = ? ",
+                "WITH a AS (" +
+                        "SELECT id FROM locations WHERE LOWER(locations.name) = LOWER( ? ) ) " +
+                        "SELECT texts.text, texts.title, texts.id " +
+                        "FROM texts " +
+                        "INNER JOIN a ON texts.locations_id = a.id " +
+                        "WHERE texts.detailed = ? ",
                 arrayOf(location, if(isAusführlich.toString() == "true" )"1" else "0")
             )
-
 
             if (cursor == null || cursor.count == 0) {
                 Log.i("Robot",location)
@@ -179,14 +179,87 @@ class DatabaseHelper(context: Context, private val databaseName: String) : SQLit
                         cursor.getString(cursor.getColumnIndex("text"))
                     val title =
                         cursor.getString(cursor.getColumnIndex("title"))
-                    resultList.add(Pair(text, title))
+                    val id =
+                        cursor.getString(cursor.getColumnIndex("id"))
+                    resultList.add(listOf(text, title, id))
                 } while (cursor.moveToNext())
             }
 
             cursor.close()
         }
-        return    resultList.toTypedArray()
+        return resultList.toTypedArray()
     }
+
+
+    @SuppressLint("Range")
+    fun getMediaOfText(id: String): Array<String> {
+        val resultList = mutableListOf<String>() // To store the results
+
+        database?.let { db ->
+            val cursor = db.rawQuery(
+                "SELECT media.url " +
+                        "FROM media " +
+                        "INNER JOIN texts ON texts.id = media.texts_id " +
+                        "WHERE texts.id = ? ",
+                arrayOf(id)
+            )
+
+            if (cursor == null || cursor.count == 0) {
+                cursor?.close()
+                return arrayOf()
+            }
+
+            if (cursor.moveToFirst()) {
+                do {
+                    val url = cursor.getString(cursor.getColumnIndex("url"))
+                    resultList.add(url)
+                } while (cursor.moveToNext())
+            }
+
+            cursor.close()
+        }
+        return resultList.toTypedArray()
+    }
+
+
+    @SuppressLint("Range")
+    fun getTextsOfItems(location: String, isAusführlich: Boolean): Array<List<String>> {
+        val resultList = mutableListOf<List<String>>() // To store the results
+
+        database?.let { db ->
+            val cursor = db.rawQuery(
+                "WITH a AS (SELECT id FROM locations WHERE LOWER(locations.name) = LOWER( ? ) ) " +
+                        "SELECT texts.text, texts.title, texts.id " +
+                        "FROM items " +
+                        "INNER JOIN a ON items.locations_id = a.id " +
+                        "INNER JOIN texts ON texts.locations_id = a.locations_id " +
+                        "WHERE texts.detailed = ? ",
+                arrayOf(location, if(isAusführlich.toString() == "true" )"1" else "0")
+            )
+
+            if (cursor == null || cursor.count == 0) {
+                Log.i("Robot",location)
+                cursor?.close()
+                return arrayOf()
+            }
+
+            if (cursor.moveToFirst()) {
+                do {
+                    val text =
+                        cursor.getString(cursor.getColumnIndex("text"))
+                    val title =
+                        cursor.getString(cursor.getColumnIndex("title"))
+                    val id =
+                        cursor.getString(cursor.getColumnIndex("id"))
+                    resultList.add(listOf(text, title, id))
+                } while (cursor.moveToNext())
+            }
+
+            cursor.close()
+        }
+        return resultList.toTypedArray()
+    }
+
 
     @SuppressLint("Range")
     fun getAllTransfers(): Array<Pair<String, String>> {
