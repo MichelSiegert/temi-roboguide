@@ -31,21 +31,84 @@ class Tourscreen(private val context: Activity,
                  private val locations : List<String> = robot.locations,
 ) {
 
-    private val pics: Array<String> = arrayOf("https://httpcats.com/102.jpg", "https://httpcats.com/420.jpg",
-        "https://httpcats.com/308.jpg","https://http.pizza/404.jpg", "https://http.pizza/500.jpg", "https://www.youtube.com/embed/kYvA1MdYkpE?si=YALhvp73mXMaD_-m")
+    private val trip: RoundTrip
+    private val bar: ProgressBar
 
+    init {
+        context.setContentView(R.layout.tour_screen)
+        bar = context.findViewById(R.id.progressBar)
+        trip = RoundTrip(robot, 0, locations, context, ::handleBackAction, ::tryAgain, ::continueTour)
+    }
     @SuppressLint("SetJavaScriptEnabled")
     fun handleTourScreen() {
 
-        context.setContentView(R.layout.tour_screen)
+        robot.addOnGoToLocationStatusChangedListener(trip)
+         updateText();
+
+         val backButton = context.findViewById<ImageButton>(R.id.backbutton)
+        backButton.setOnClickListener {
+            handleBackAction()
+            handleInitScreen()
+        }
+
+        val continueButton = context.findViewById<ImageButton>(R.id.continuebutton)
+        continueButton.setOnClickListener{
+            continueTour()
+        }
+    }
+
+    private fun handleBackAction() {
+        context.setContentView(R.layout.first_screen)
+
+        robot.removeOnGoToLocationStatusChangedListener(trip)
+        robot.goTo(robot.locations[0], false)
+        val ttsRequest = TtsRequest.create(
+            speech = "Okay! Ich gehe dann wieder zum Anfang. Viel Spaß im Museum!",
+            isShowOnConversationLayer = false
+        )
+        robot.speak(ttsRequest)
+    }
+
+    private fun updateText(){
+        val textPair = database.getTextsOfLocation(locations[trip.index], isAusführlich)
+        //TODO: as far as I understand this cant work right now. I need to implement a queue for each place. fuck me!
+        context.findViewById<TextView>(R.id.text_view).text = textPair[0][0]
+        context.findViewById<TextView>(R.id.title_view).text = textPair[0][1]
+        loadImages(textPair[0][2])
+    }
+
+    private fun continueTour(){
+
+        robot.cancelAllTtsRequests()
+        val index = trip.index+1
+        if(index == locations.size){
+            val eval = EvalScreen(context, robot, database)
+            eval.initScreen()
+        } else {
+            trip.index = index % locations.size
+            bar.progress = trip.index * 100 / locations.size
+            robot.goTo(locations[trip.index], false);
+            updateText()
+        }
+
+    }
+
+    private fun tryAgain(){
+        robot.goTo(locations[trip.index])
+    }
+
+    private fun loadImages(id: String){
         val images = context.findViewById<LinearLayout>(R.id.img)
+        val pics = database.getMediaOfText(id)
+        images.removeAllViews()
         for (url in pics) {
+            Log.i("url", url)
             if(url.contains("youtube.com/")){
+                Log.i("yes", url)
                 val webView = WebView(context)
 
                 val widthInPixels = 600
                 val heightInPixels = 400
-
                 val layoutParams = ViewGroup.LayoutParams(widthInPixels, heightInPixels)
                 layoutParams.width = widthInPixels
                 layoutParams.height = heightInPixels
@@ -56,10 +119,8 @@ class Tourscreen(private val context: Activity,
                 webView.webChromeClient = WebChromeClient()
                 images.addView(webView)
             } else {
-                // Create a new ImageView
                 val imageView = ImageView(context)
 
-                // Set layout parameters for the ImageView
                 val layoutParams = LinearLayout.LayoutParams(
                     400,
                     400
@@ -77,53 +138,5 @@ class Tourscreen(private val context: Activity,
             }
         }
 
-
-        val bar = context.findViewById<ProgressBar>(R.id.progressBar)
-
-        val trip = RoundTrip(robot, 0, locations, context)
-        robot.addOnGoToLocationStatusChangedListener(trip)
-         updateText(trip);
-
-
-         val backButton = context.findViewById<ImageButton>(R.id.backbutton)
-        backButton.setOnClickListener {
-            handleBackAction(trip)
-            handleInitScreen()
-        }
-
-        val continueButton = context.findViewById<ImageButton>(R.id.continuebutton)
-        continueButton.setOnClickListener{
-
-            robot.cancelAllTtsRequests()
-            val index = trip.index+1
-            if(index == locations.size){
-                val eval = EvalScreen(context, robot, database)
-                eval.initScreen()
-            } else {
-                trip.index = index % locations.size
-                bar.progress = trip.index * 100 / locations.size
-                robot.goTo(locations[trip.index]);
-                updateText(trip)
-            }
-        }
-    }
-
-    private fun handleBackAction(trip: RoundTrip) {
-        context.setContentView(R.layout.first_screen)
-
-        robot.removeOnGoToLocationStatusChangedListener(trip)
-        robot.goTo(robot.locations[0])
-        val ttsRequest = TtsRequest.create(
-            speech = "Okay! Ich gehe dann wieder zum Anfang. Viel Spaß im Museum!",
-            isShowOnConversationLayer = false
-        )
-        robot.speak(ttsRequest)
-    }
-
-    private fun updateText(trip: RoundTrip){
-        val textPair = database.getTextsOfLocation(locations[trip.index], isAusführlich)
-        //TODO: as far as I understand this cant work right now. I need to implement a queue for each place. fuck me!
-        context.findViewById<TextView>(R.id.text_view).text = textPair[0][0]
-        context.findViewById<TextView>(R.id.title_view).text = textPair[0][1]
     }
 }
