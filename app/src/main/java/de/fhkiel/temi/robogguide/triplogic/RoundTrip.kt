@@ -30,7 +30,7 @@ class RoundTrip(
         descriptionId: Int,
         description: String) {
         if(status == OnGoToLocationStatusChangedListener.COMPLETE) {
-            val ttsRequest: TtsRequest = TtsRequest.create(speech = activity.findViewById<TextView>(R.id.text_view).text.toString(), isShowOnConversationLayer = false);
+            val ttsRequest: TtsRequest = TtsRequest.create(speech = activity.findViewById<TextView>(R.id.text_view).text.toString(), isShowOnConversationLayer = false)
             mRobot.speak(ttsRequest)
         }
         Log.i("Movement", "$descriptionId: $description, $status")
@@ -50,7 +50,7 @@ class RoundTrip(
         }
         if(descriptionId in 2000..2009){
             Toast.makeText(activity, "Entschuldigung, hier komme ich nicht durch!", Toast.LENGTH_LONG).show()
-            val ttsRequest: TtsRequest = TtsRequest.create(speech = "Entschuldigung, hier komme ich nicht durch!", isShowOnConversationLayer = false);
+            val ttsRequest: TtsRequest = TtsRequest.create(speech = "Entschuldigung, hier komme ich nicht durch!", isShowOnConversationLayer = false)
             mRobot.speak(ttsRequest)
         }
          else if (descriptionId == 500) activity.findViewById<TextView>(R.id.error_text).text = ""

@@ -1,6 +1,5 @@
 package de.fhkiel.temi.robogguide
 
-import android.app.Activity
 import com.robotemi.sdk.Robot
 import de.fhkiel.temi.robogguide.database.DatabaseHandler
 import de.fhkiel.temi.robogguide.database.DatabaseHelper

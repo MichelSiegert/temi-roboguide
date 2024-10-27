@@ -13,7 +13,7 @@ class IndividualTourScreen(
                         private val mRobot: Robot,
                         private val handleInitScreen: () -> Unit) {
 
-    public fun handleIndivTourScreen() {
+    fun handleIndivTourScreen() {
         activity.setContentView(R.layout.individual_tour_planner)
 
         val layout = activity.findViewById<LinearLayout>(R.id.listoflocations)

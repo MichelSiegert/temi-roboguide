@@ -5,7 +5,6 @@ import android.widget.ImageButton
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.TtsRequest
 import de.fhkiel.temi.robogguide.R
-import de.fhkiel.temi.robogguide.database.DatabaseHandler
 import de.fhkiel.temi.robogguide.evaluation.Evaluation
 import de.fhkiel.temi.robogguide.evaluation.saveToFile
 
@@ -13,7 +12,6 @@ class EvalScreen(
     private val context: Activity,
     private val robot: Robot,
 ){
-    private val database = DatabaseHandler.getDb()!!
 
     fun initScreen(){
         context.setContentView(R.layout.eval_screen)

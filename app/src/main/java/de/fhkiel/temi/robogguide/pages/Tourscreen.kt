@@ -15,7 +15,6 @@ import com.robotemi.sdk.Robot
 import com.robotemi.sdk.TtsRequest
 import de.fhkiel.temi.robogguide.R
 import de.fhkiel.temi.robogguide.database.DatabaseHandler
-import de.fhkiel.temi.robogguide.database.DatabaseHelper
 import de.fhkiel.temi.robogguide.media.createYoutube
 import de.fhkiel.temi.robogguide.media.downloadImage
 import de.fhkiel.temi.robogguide.triplogic.RoundTrip
@@ -44,7 +43,7 @@ class Tourscreen(private val context: Activity,
     fun handleTourScreen() {
 
         robot.addOnGoToLocationStatusChangedListener(trip)
-         updateText();
+         updateText()
 
          val backButton = context.findViewById<ImageButton>(R.id.backbutton)
         backButton.setOnClickListener {
@@ -87,7 +86,7 @@ class Tourscreen(private val context: Activity,
         } else {
             trip.index = index % locations.size
             bar.progress = trip.index * 100 / locations.size
-            robot.goTo(locations[trip.index], false);
+            robot.goTo(locations[trip.index], false)
             updateText()
         }
 
