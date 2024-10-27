@@ -14,6 +14,7 @@ import android.widget.TextView
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.TtsRequest
 import de.fhkiel.temi.robogguide.R
+import de.fhkiel.temi.robogguide.database.DatabaseHandler
 import de.fhkiel.temi.robogguide.database.DatabaseHelper
 import de.fhkiel.temi.robogguide.media.createYoutube
 import de.fhkiel.temi.robogguide.media.downloadImage
@@ -26,11 +27,11 @@ import kotlinx.coroutines.withContext
 class Tourscreen(private val context: Activity,
                  private val robot: Robot,
                  private val handleInitScreen: () -> Unit,
-                 private val database: DatabaseHelper,
                  private val isAusführlich: Boolean = false,
-                 private val locations : List<String> = robot.locations,
+                 private val locations : List<String>,
 ) {
 
+    private val database = DatabaseHandler.getDb()!!
     private val trip: RoundTrip
     private val bar: ProgressBar
 
@@ -71,7 +72,6 @@ class Tourscreen(private val context: Activity,
 
     private fun updateText(){
         val textPair = database.getTextsOfLocation(locations[trip.index], isAusführlich)
-        //TODO: as far as I understand this cant work right now. I need to implement a queue for each place. fuck me!
         context.findViewById<TextView>(R.id.text_view).text = textPair[0][0]
         context.findViewById<TextView>(R.id.title_view).text = textPair[0][1]
         loadImages(textPair[0][2])
@@ -82,7 +82,7 @@ class Tourscreen(private val context: Activity,
         robot.cancelAllTtsRequests()
         val index = trip.index+1
         if(index == locations.size){
-            val eval = EvalScreen(context, robot, database)
+            val eval = EvalScreen(context, robot)
             eval.initScreen()
         } else {
             trip.index = index % locations.size
@@ -97,6 +97,7 @@ class Tourscreen(private val context: Activity,
         robot.goTo(locations[trip.index])
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun loadImages(id: String){
         val images = context.findViewById<LinearLayout>(R.id.img)
         val pics = database.getMediaOfText(id)

@@ -13,7 +13,7 @@ import de.fhkiel.temi.robogguide.R
 class RoundTrip(
     private val mRobot: Robot,
     var index: Int =0,
-    private val locations: List<String> = mRobot.locations,
+    locations: List<String>,
     private val activity: Activity,
     private val backFunction: ()-> Any,
     private val tryAgainFunction: () -> Any,
@@ -39,10 +39,10 @@ class RoundTrip(
             builder.setTitle("Confirm Action")
             builder.setMessage("Wie wollen Sie weiter Verfahren?")
 
-            builder.setPositiveButton("Station überspringen") { dialog, which -> continueFunction()}
-            builder.setNeutralButton("Erneut versuchen") { dialog, which -> tryAgainFunction()}
+            builder.setPositiveButton("Station überspringen") { _, _ -> continueFunction()}
+            builder.setNeutralButton("Erneut versuchen") { _, _ -> tryAgainFunction()}
 
-            builder.setNegativeButton("Tour Beenden") { dialog, which -> backFunction() }
+            builder.setNegativeButton("Tour Beenden") { _, _ -> backFunction() }
 
             // Create and show the dialog
             val alertDialog = builder.create()

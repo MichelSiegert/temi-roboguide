@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.listeners.OnRobotReadyListener
+import de.fhkiel.temi.robogguide.database.DatabaseHandler
 import de.fhkiel.temi.robogguide.database.DatabaseHelper
 import de.fhkiel.temi.robogguide.pages.InitialScreen
 import java.io.IOException
@@ -15,23 +16,11 @@ import java.io.IOException
 // ADB Connect (ip address)
     class MainActivity : AppCompatActivity(), OnRobotReadyListener {
     private var mRobot: Robot? = null
-    private lateinit var database: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.first_screen)
-
-        // use database
-        val databaseName = "roboguide.db"
-        database = DatabaseHelper(this, databaseName)
-
-        try {
-            database.initializeDatabase() // Initialize the database and copy it from assets
-
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
+        DatabaseHandler.init(this)
     }
 
     override fun onStart() {
@@ -47,7 +36,7 @@ import java.io.IOException
 
     override fun onDestroy() {
         super.onDestroy()
-        database.closeDatabase()
+        DatabaseHandler.onDestroy()
     }
 
     override fun onRobotReady(isReady: Boolean) {
@@ -61,8 +50,8 @@ import java.io.IOException
             Robot.getInstance().onStart(activityInfo)
             mRobot?.let { robot-> run {
 
-                Log.i("Robot", database.getTextsOfLocation(robot.locations[0], false)[0].toString())
-                val initScreen = InitialScreen(this,  robot, database)
+                Routes.initialize(robot)
+                val initScreen = InitialScreen(this,  robot)
                  initScreen.handleInitScreen()
             } }
 
