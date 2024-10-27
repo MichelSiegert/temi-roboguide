@@ -12,7 +12,7 @@ class InitialScreen(
     private val robot: Robot) {
 
     fun handleInitScreen() {
-
+        context.setContentView(R.layout.first_screen)
         context.findViewById<Button>(R.id.individual)?.setOnClickListener {
                 val indivTour = IndividualTourScreen(context, robot,  ::handleInitScreen)
                 indivTour.handleIndivTourScreen()

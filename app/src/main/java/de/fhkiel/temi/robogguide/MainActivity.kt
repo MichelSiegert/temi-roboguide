@@ -3,6 +3,7 @@ package de.fhkiel.temi.robogguide
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.listeners.OnRobotReadyListener
@@ -41,6 +42,9 @@ import de.fhkiel.temi.robogguide.pages.InitialScreen
             mRobot = Robot.getInstance()
             mRobot?.toggleNavigationBillboard(true)
 
+
+            val text =DatabaseHandler.database!!.getTextsOfTransfer("home base",true)
+            Log.i("try", text[0]  +text[1] + text[2])
             mRobot?.hideTopBar()
 
             val activityInfo: ActivityInfo = packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA)

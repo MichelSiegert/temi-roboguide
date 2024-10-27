@@ -22,7 +22,6 @@ class IndividualTourScreen(
 
         val back = activity.findViewById<Button>(R.id.backbuttonindiv)
         back.setOnClickListener {
-
             handleInitScreen()
         }
 

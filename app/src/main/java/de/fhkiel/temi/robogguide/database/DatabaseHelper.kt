@@ -12,7 +12,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
-class DatabaseHelper(context: Context, private val databaseName: String) : SQLiteOpenHelper(context, databaseName, null, 1) {
+class   DatabaseHelper(context: Context, private val databaseName: String) : SQLiteOpenHelper(context, databaseName, null, 1) {
 
     private val databasePath = File(context.getDatabasePath(databaseName).path).absolutePath
     private val databaseFullPath = "$databasePath$databaseName"
@@ -153,8 +153,8 @@ class DatabaseHelper(context: Context, private val databaseName: String) : SQLit
     }
 
     @SuppressLint("Range")
-    fun getTextsOfLocation(location: String, isAusführlich: Boolean): Array<List<String>> {
-        val resultList = mutableListOf<List<String>>() // To store the results
+    fun getTextsOfLocation(location: String, isAusführlich: Boolean): List<String> {
+        val resultList = mutableListOf<String>() // To store the results
 
         database?.let { db ->
             val cursor = db.rawQuery(
@@ -170,24 +170,22 @@ class DatabaseHelper(context: Context, private val databaseName: String) : SQLit
             if (cursor == null || cursor.count == 0) {
                 Log.i("Robot",location)
                 cursor?.close()
-                return arrayOf()
+                return listOf()
             }
 
             if (cursor.moveToFirst()) {
                 do {
-                    val text =
-                        cursor.getString(cursor.getColumnIndex("text"))
-                    val title =
-                        cursor.getString(cursor.getColumnIndex("title"))
-                    val id =
-                        cursor.getString(cursor.getColumnIndex("id"))
-                    resultList.add(listOf(text, title, id))
+                    resultList.add(cursor.getString(cursor.getColumnIndex("text")))
+                    resultList.add(
+                        cursor.getString(cursor.getColumnIndex("title")))
+                    resultList.add(
+                        cursor.getString(cursor.getColumnIndex("id")))
                 } while (cursor.moveToNext())
             }
 
             cursor.close()
         }
-        return resultList.toTypedArray()
+        return resultList
     }
 
 
@@ -259,6 +257,48 @@ class DatabaseHelper(context: Context, private val databaseName: String) : SQLit
         }
         return resultList.toTypedArray()
     }
+
+    @SuppressLint("Range")
+    fun getTextsOfTransfer(location: String, isAusführlich: Boolean): List<String> {
+        val resultList = mutableListOf<String>() // To store the results
+
+        database?.let { db ->
+            val cursor = db.rawQuery(
+                "WITH a AS (SELECT id FROM locations WHERE LOWER(locations.name) = LOWER( ? ) ) " +
+                        "SELECT texts.text, texts.title, texts.id " +
+                        "FROM transfers " +
+                        "INNER JOIN a ON transfers.location_to = a.id " +
+                        "INNER JOIN texts ON texts.transfers_id = transfers.id " +
+                        "WHERE texts.detailed = ? ",
+                arrayOf(location, if(isAusführlich)"1" else "0")
+            )
+
+            if (cursor == null || cursor.count == 0) {
+                Log.i("Robot",location)
+                cursor?.close()
+                return listOf()
+            }
+
+            if (cursor.moveToFirst()) {
+                //NOTE THIS SHOULD ONLY HAPPEN ONCE as far as my knowledge goes. it would make sense otherwise.
+                do {
+                    val text =
+                        cursor.getString(cursor.getColumnIndex("text"))
+                    val title =
+                        cursor.getString(cursor.getColumnIndex("title"))
+                    val id =
+                        cursor.getString(cursor.getColumnIndex("id"))
+                    resultList.add(text)
+                    resultList.add(title)
+                    resultList.add(id)
+                } while (cursor.moveToNext())
+            }
+
+            cursor.close()
+        }
+        return resultList
+    }
+
 
 
     @SuppressLint("Range")

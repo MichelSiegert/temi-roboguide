@@ -8,6 +8,7 @@ object Routes {
     private var database:DatabaseHelper = DatabaseHandler.database!!
     lateinit var route: List<String>
     lateinit var importantRoute: List<String>
+    var start  = ""
 
     fun initialize(robot: Robot) {
             route = calculateRoute(robot)
@@ -23,6 +24,8 @@ object Routes {
         val locationToSet = transfers.map { it.second }.toSet()
         val startLocation = transfers.map { it.first }
             .filterNot { locationToSet.contains(it) }[0]
+        //TODO: Here needs to be something done where there is more than 1.
+        start = startLocation
 
         val tmp = transfers.map { it.first }.toSet()
         val endLocation = transfers.map { it.second }

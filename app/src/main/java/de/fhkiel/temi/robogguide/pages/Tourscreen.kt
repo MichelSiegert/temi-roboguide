@@ -14,6 +14,7 @@ import android.widget.TextView
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.TtsRequest
 import de.fhkiel.temi.robogguide.R
+import de.fhkiel.temi.robogguide.Routes
 import de.fhkiel.temi.robogguide.database.DatabaseHandler
 import de.fhkiel.temi.robogguide.media.createYoutube
 import de.fhkiel.temi.robogguide.media.downloadImage
@@ -43,7 +44,7 @@ class Tourscreen(private val context: Activity,
     fun handleTourScreen() {
 
         robot.addOnGoToLocationStatusChangedListener(trip)
-         updateText()
+        continueTour(true)
 
          val backButton = context.findViewById<ImageButton>(R.id.backbutton)
         backButton.setOnClickListener {
@@ -58,36 +59,43 @@ class Tourscreen(private val context: Activity,
     }
 
     private fun handleBackAction() {
-        context.setContentView(R.layout.first_screen)
-
+        handleInitScreen()
         robot.removeOnGoToLocationStatusChangedListener(trip)
-        robot.goTo(robot.locations[0], false)
+        robot.goTo(Routes.start, false)
         val ttsRequest = TtsRequest.create(
             speech = "Okay! Ich gehe dann wieder zum Anfang. Viel Spaß im Museum!",
-            isShowOnConversationLayer = false
-        )
+            isShowOnConversationLayer = false)
         robot.speak(ttsRequest)
     }
 
-    private fun updateText(){
-        val textPair = database.getTextsOfLocation(locations[trip.index], isAusführlich)
-        context.findViewById<TextView>(R.id.text_view).text = textPair[0][0]
-        context.findViewById<TextView>(R.id.title_view).text = textPair[0][1]
-        loadImages(textPair[0][2])
+    private fun updateText(information: List<String>){
+        context.findViewById<TextView>(R.id.text_view).text = information[0]
+        context.findViewById<TextView>(R.id.title_view).text = information[1]
+        loadImages(information[2])
     }
 
-    private fun continueTour(){
+    private fun continueTour(isFirst: Boolean = false){
 
         robot.cancelAllTtsRequests()
-        val index = trip.index+1
+        val index = if(isFirst) trip.index else trip.index+1
         if(index == locations.size){
             val eval = EvalScreen(context, robot)
             eval.initScreen()
         } else {
-            trip.index = index % locations.size
+            trip.index = index
             bar.progress = trip.index * 100 / locations.size
+            val request = database.getTextsOfTransfer(locations[trip.index], isAusführlich)
+            if(request.isNotEmpty()){
+                updateText((request))
+                val ttsRequest = TtsRequest.create(
+                    speech = request[0],
+                    isShowOnConversationLayer = false)
+                robot.speak(ttsRequest)
+                trip.queue.add(database.getTextsOfLocation(locations[trip.index], isAusführlich))
+            } else {
+                updateText(database.getTextsOfLocation(locations[trip.index], isAusführlich))
+            }
             robot.goTo(locations[trip.index], false)
-            updateText()
         }
 
     }

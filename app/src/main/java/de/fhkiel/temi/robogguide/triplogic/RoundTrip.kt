@@ -15,11 +15,11 @@ class RoundTrip(
     var index: Int =0,
     locations: List<String>,
     private val activity: Activity,
-    private val backFunction: ()-> Any,
+    private val backFunction: () -> Any,
     private val tryAgainFunction: () -> Any,
     private val continueFunction: () -> Any
     ) : OnGoToLocationStatusChangedListener {
-
+        var queue = mutableListOf<List<String>>()
     init {
         mRobot.goTo(locations[0])
     }
