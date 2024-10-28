@@ -20,6 +20,7 @@ class RoundTrip(
     private val tourProgress: () -> Any,
     private val fisnished: ()-> Any
 ) : OnGoToLocationStatusChangedListener {
+    var isPaused = false
         var queue = mutableListOf<List<String>>()
     var lastLocationStatus: String = OnGoToLocationStatusChangedListener.START
 

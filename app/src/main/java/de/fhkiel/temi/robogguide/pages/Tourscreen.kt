@@ -67,6 +67,16 @@ class Tourscreen(private val context: Activity,
         continueButton.setOnClickListener{
             continueTour()
         }
+
+        val pauseButton =  context.findViewById<ImageButton>(R.id.pausebutton)
+        pauseButton.setOnClickListener{
+            trip.isPaused  = !trip.isPaused
+            if(!trip.isPaused &&
+                speaking.lastStatus === TtsRequest.Status.COMPLETED &&
+                trip.lastLocationStatus === OnGoToLocationStatusChangedListener.COMPLETE)
+                progressTour()
+        }
+
     }
 
     private fun handleBackAction() {
@@ -90,6 +100,7 @@ class Tourscreen(private val context: Activity,
     private fun continueTour(isFirst: Boolean = false){
         trip.queue.clear()
         trip.lastLocationStatus = "ABORT"
+        trip.isPaused = false
         speaking.lastStatus = TtsRequest.Status.STARTED
         robot.cancelAllTtsRequests()
         val index = if(isFirst) trip.index else trip.index+1
@@ -115,7 +126,6 @@ class Tourscreen(private val context: Activity,
             trip.queue.addAll(database.getTextsOfItems(locations[trip.index], isAusführlich))
             robot.goTo(locations[trip.index], false)
         }
-
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -139,6 +149,7 @@ class Tourscreen(private val context: Activity,
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun progressTour(){
+        if(trip.isPaused) return
         if(!(trip.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
             speaking.lastStatus ==  TtsRequest.Status.COMPLETED))return
         speaking.lastStatus = TtsRequest.Status.STARTED
@@ -146,6 +157,7 @@ class Tourscreen(private val context: Activity,
         GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     while(true) {
+                        if(trip.isPaused) break
                         delay(10000)
                         if(youtubeHandlers.all{ !it.isRunning} ){
                         youtubeHandlers.clear()
