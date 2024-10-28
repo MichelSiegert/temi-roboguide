@@ -7,7 +7,10 @@ class Speaker (private val handleUpdate: () -> Unit): Robot.TtsListener  {
     var lastStatus = TtsRequest.Status.COMPLETED
     override fun onTtsStatusChanged(ttsRequest: TtsRequest) {
         lastStatus = ttsRequest.status
-        handleUpdate()
 
+        if(ttsRequest.status !== TtsRequest.Status.COMPLETED) {
+            return
+        }
+        handleUpdate()
     }
 }

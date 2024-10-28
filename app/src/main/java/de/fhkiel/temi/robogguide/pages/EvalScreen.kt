@@ -16,7 +16,8 @@ class EvalScreen(
     fun initScreen(){
         context.setContentView(R.layout.eval_screen)
         val ttsRequest = TtsRequest.create(
-            speech = "Würdest du mir bitte noch feedback zu der Führung geben?",
+            speech = "Okay, das war die gesamte Tour. Ich hoffe es hat Ihnen gefallen." +
+                    "Würdest sie mir bitte noch Feedback zu der Führung geben?",
             isShowOnConversationLayer = false
         )
         robot.speak(ttsRequest)

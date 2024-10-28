@@ -39,7 +39,7 @@ class Tourscreen(private val context: Activity,
                  private val locations : List<String>,
 ) {
     private val database = DatabaseHandler.getDb()!!
-    private val trip = RoundTrip(robot, 0, locations, context, ::handleBackAction, ::tryAgain, ::continueTour, ::progressTour)
+    private val trip = RoundTrip(robot, 0, locations, context, ::handleBackAction, ::tryAgain, ::continueTour, ::progressTour, ::hasFinishedSpeaking)
     private val bar: ProgressBar
     private val speaking = Speaker(::progressTour)
     private val youtubeHandlers: MutableList<YoutubePlayerListener>  = mutableListOf()
@@ -90,9 +90,12 @@ class Tourscreen(private val context: Activity,
     private fun continueTour(isFirst: Boolean = false){
         trip.queue.clear()
         trip.lastLocationStatus = "ABORT"
+        speaking.lastStatus = TtsRequest.Status.STARTED
         robot.cancelAllTtsRequests()
         val index = if(isFirst) trip.index else trip.index+1
         if(index == locations.size){
+            robot.removeOnGoToLocationStatusChangedListener(trip)
+            robot.removeTtsListener(speaking)
             val eval = EvalScreen(context, robot)
             eval.initScreen()
         } else {
@@ -114,6 +117,16 @@ class Tourscreen(private val context: Activity,
 
     }
 
+
+    private fun hasFinishedSpeaking() {
+        if(speaking.lastStatus == TtsRequest.Status.COMPLETED){
+            val ttsRequest = TtsRequest.create(
+                speech = context.findViewById<TextView>(R.id.text_view)?.text.toString(),
+                isShowOnConversationLayer = false)
+            robot.speak(ttsRequest)
+        }
+        return
+    }
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun progressTour(){
@@ -146,6 +159,12 @@ class Tourscreen(private val context: Activity,
     }
 
     private fun tryAgain(){
+        if(speaking.lastStatus === TtsRequest.Status.COMPLETED) {
+            val ttsRequest = TtsRequest.create(
+                speech = context.findViewById<TextView>(R.id.text_view)?.text.toString(),
+                isShowOnConversationLayer = false)
+            robot.speak(ttsRequest)
+        }
         robot.goTo(locations[trip.index])
     }
 
