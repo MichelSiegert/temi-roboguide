@@ -23,7 +23,6 @@ class RoundTrip(
         var queue = mutableListOf<List<String>>()
     var lastLocationStatus: String = OnGoToLocationStatusChangedListener.START
 
-
     init {
         mRobot.goTo(locations[0])
     }

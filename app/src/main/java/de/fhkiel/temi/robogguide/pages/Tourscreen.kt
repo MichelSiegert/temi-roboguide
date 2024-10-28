@@ -117,15 +117,23 @@ class Tourscreen(private val context: Activity,
 
     }
 
-
+    @OptIn(DelicateCoroutinesApi::class)
     private fun hasFinishedSpeaking() {
-        if(speaking.lastStatus == TtsRequest.Status.COMPLETED){
-            val ttsRequest = TtsRequest.create(
-                speech = context.findViewById<TextView>(R.id.text_view)?.text.toString(),
-                isShowOnConversationLayer = false)
-            robot.speak(ttsRequest)
+        if(speaking.lastStatus != TtsRequest.Status.COMPLETED){
+            GlobalScope.launch {
+                withContext(Dispatchers.Main) { while (true){
+                    delay(200)
+                    if(speaking.lastStatus === TtsRequest.Status.COMPLETED) {
+                        val ttsRequest = TtsRequest.create(
+                            speech = context.findViewById<TextView>(R.id.text_view)?.text.toString(),
+                            isShowOnConversationLayer = false)
+                        robot.speak(ttsRequest)
+                        break
+                        }
+                    }
+                }
+            }
         }
-        return
     }
 
     @OptIn(DelicateCoroutinesApi::class)
