@@ -230,7 +230,7 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
                         "SELECT texts.text, texts.title, texts.id " +
                         "FROM items " +
                         "INNER JOIN a ON items.locations_id = a.id " +
-                        "INNER JOIN texts ON texts.locations_id = a.locations_id " +
+                        "INNER JOIN texts ON texts.items_id = items.id " +
                         "WHERE texts.detailed = ? ",
                 arrayOf(location, if(isAusführlich.toString() == "true" )"1" else "0")
             )

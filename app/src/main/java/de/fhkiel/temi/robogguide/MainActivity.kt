@@ -10,7 +10,6 @@ import de.fhkiel.temi.robogguide.database.DatabaseHandler
 import de.fhkiel.temi.robogguide.pages.InitialScreen
 
 
-// ADB Connect (ip address)
     class MainActivity : AppCompatActivity(), OnRobotReadyListener {
     private var mRobot: Robot? = null
 

@@ -112,6 +112,7 @@ class Tourscreen(private val context: Activity,
                 updateText(database.getTextsOfLocation(locations[trip.index], isAusführlich))
             }
             trip.queue.add(database.getTextsOfLocation(locations[trip.index], isAusführlich))
+            trip.queue.addAll(database.getTextsOfItems(locations[trip.index], isAusführlich))
             robot.goTo(locations[trip.index], false)
         }
 

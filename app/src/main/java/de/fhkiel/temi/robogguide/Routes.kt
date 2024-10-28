@@ -8,6 +8,7 @@ object Routes {
     private var database:DatabaseHelper = DatabaseHandler.database!!
     lateinit var route: List<String>
     lateinit var importantRoute: List<String>
+    lateinit var map : Map<String, String>
     var start  = ""
 
     fun initialize(robot: Robot) {
@@ -17,15 +18,20 @@ object Routes {
 
     private fun calculateRoute(robot:Robot): List<String> {
 
-        val map = database.getLocationMap();
+        map = database.getLocationMap();
         var transfers  =database.getAllTransfers()
         transfers.shuffle()
         transfers = transfers.map { Pair(map[it.first]!!, map[it.second]!!) }.filter { robot.locations.contains(it.first) ||  robot.locations.contains(it.second)  }.toTypedArray()
         val locationToSet = transfers.map { it.second }.toSet()
-        val startLocation = transfers.map { it.first }
-            .filterNot { locationToSet.contains(it) }[0]
+        val startLocationArray = transfers.map { it.first }
+            .filterNot { locationToSet.contains(it) }
+
+        if(startLocationArray.size != 1){
+            throw IllegalStateException("Es sollte nur eine startlocation geben, aber es wurden ${startLocationArray.size} gefunden!")
+        }
+        val startLocation = startLocationArray[0]
         //TODO: Here needs to be something done where there is more than 1.
-        start = startLocation
+        start =startLocation
 
         val tmp = transfers.map { it.first }.toSet()
         val endLocation = transfers.map { it.second }
@@ -36,9 +42,14 @@ object Routes {
 
         while (route[route.size-1] != endLocation){
             val current = route[route.size - 1]
-            val next = (transfers.find { it.first == current })!!.second
+            val nextArray = (transfers.filter { it.first == current })
 
-            route += next
+            if(nextArray.size != 1) {
+                throw IllegalStateException("Es sollte exakt einen weg vorwärts geben von position $current aber es gibt ${nextArray.size} Optionen!")
+            }
+
+            val next = nextArray[0]
+            route += next.second
         }
         return route.toList()
     }
