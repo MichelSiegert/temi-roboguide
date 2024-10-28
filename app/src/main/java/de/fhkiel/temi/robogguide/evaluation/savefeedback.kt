@@ -21,7 +21,6 @@ fun saveToFile(context: Context, fileContent: String) {
             outputStream.write(fileContent.toByteArray())
             outputStream.flush()
         }
-        Log.i("weee", "success!")
     } catch (e: IOException) {
         e.printStackTrace()
 

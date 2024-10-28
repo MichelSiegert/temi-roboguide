@@ -276,11 +276,10 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
             if (cursor == null || cursor.count == 0) {
                 Log.i("Robot",location)
                 cursor?.close()
-                return listOf()
+                return listOf("Hierfür habe ich keine Informationen. Tut mir leid!", "Hier ist wohl etwas schief gelaufen!", "-1")
             }
 
             if (cursor.moveToFirst()) {
-                //NOTE THIS SHOULD ONLY HAPPEN ONCE as far as my knowledge goes. it would make sense otherwise.
                 do {
                     val text =
                         cursor.getString(cursor.getColumnIndex("text"))
@@ -374,10 +373,9 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
                         "WHERE important=1;", arrayOf()
             )
 
-            Log.i("wee", cursor.toString())
             if (cursor == null || cursor.count == 0) {
                 cursor?.close()
-                return arrayOf()
+                return arrayOf("")
             }
 
             if (cursor.moveToFirst()) {

@@ -17,9 +17,13 @@ class RoundTrip(
     private val activity: Activity,
     private val backFunction: () -> Any,
     private val tryAgainFunction: () -> Any,
-    private val continueFunction: () -> Any
+    private val continueFunction: () -> Any,
+    private val tourProgress: () -> Any
     ) : OnGoToLocationStatusChangedListener {
         var queue = mutableListOf<List<String>>()
+    var lastLocationStatus: String = OnGoToLocationStatusChangedListener.START
+
+
     init {
         mRobot.goTo(locations[0])
     }
@@ -29,9 +33,11 @@ class RoundTrip(
         status: String,
         descriptionId: Int,
         description: String) {
+        lastLocationStatus = status
         if(status == OnGoToLocationStatusChangedListener.COMPLETE) {
-            val ttsRequest: TtsRequest = TtsRequest.create(speech = activity.findViewById<TextView>(R.id.text_view).text.toString(), isShowOnConversationLayer = false)
-            mRobot.speak(ttsRequest)
+            tourProgress()
+            // val ttsRequest: TtsRequest = TtsRequest.create(speech = activity.findViewById<TextView>(R.id.text_view).text.toString(), isShowOnConversationLayer = false)
+            // mRobot.speak(ttsRequest)
         }
         Log.i("Movement", "$descriptionId: $description, $status")
         if(descriptionId == 1003 || descriptionId == 1004 )  {

@@ -15,7 +15,7 @@ fun downloadImage(urlString: String): Bitmap? {
         val inputStream = connection.inputStream
         return BitmapFactory.decodeStream(inputStream)
     } catch (e: Exception) {
-        Log.i("wee", e.toString())
+        Log.i("download", e.toString())
     }
     return null
 }
