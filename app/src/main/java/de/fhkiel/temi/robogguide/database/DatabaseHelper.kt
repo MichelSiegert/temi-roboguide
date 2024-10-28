@@ -276,7 +276,7 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
             if (cursor == null || cursor.count == 0) {
                 Log.i("Robot",location)
                 cursor?.close()
-                return listOf("Hierfür habe ich keine Informationen. Tut mir leid!", "Hier ist wohl etwas schief gelaufen!", "-1")
+                return listOf("", "", "")
             }
 
             if (cursor.moveToFirst()) {

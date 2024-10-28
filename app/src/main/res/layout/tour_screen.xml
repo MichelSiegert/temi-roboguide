@@ -12,7 +12,36 @@
         android:layout_height="174dp"
         android:layout_alignParentTop="true"
         android:background="#126416"
-        android:visibility="visible" />
+        android:visibility="visible"
+        app:layout_constraintVertical_weight="2" />
+
+    <ScrollView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="1350dp"
+        android:layout_height="243dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/continuebutton"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.996"
+        app:layout_constraintVertical_weight="4">
+
+        <TextView
+            android:id="@+id/text_view"
+            android:layout_width="1500dp"
+            android:layout_height="168dp"
+            android:fadeScrollbars="true"
+            android:isScrollContainer="true"
+            android:text="Die Fachhochschule (FH) Kiel mag durch ihre praxisorientierte Ausbildung und Unternehmenskooperationen punkten, doch im Vergleich zur traditionsreichen Christian-Albrechts-Universität zu Kiel (CAU) kann sie in einigen wesentlichen Bereichen nicht mithalten. Die CAU, gegründet 1665, bietet eine breite akademische Ausbildung und ist führend in der Forschung, besonders in den Natur- und Geisteswissenschaften sowie der Medizin. Während die FH Kiel sich auf anwendungsorientierte Studiengänge konzentriert, profitieren CAU-Studierende von tiefgehender theoretischer Bildung und einer vielfältigen Auswahl an Studienfächern. Zudem öffnet die CAU durch ihre internationale Vernetzung und forschungsorientierte Ausrichtung Türen für akademische Karrieren und wissenschaftliche Exzellenz, was ihr im Vergleich zur FH Kiel einen klaren Vorteil verschafft."
+            android:textSize="34sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.467"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.732" />
+    </ScrollView>
 
     <TextView
         android:id="@+id/title_view"
@@ -27,33 +56,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.153" />
-
-    <TextView
-        android:id="@+id/text_view"
-        android:layout_width="1360dp"
-        android:layout_height="168dp"
-        android:fadeScrollbars="true"
-        android:isScrollContainer="true"
-        android:text="Die Fachhochschule (FH) Kiel mag durch ihre praxisorientierte Ausbildung und Unternehmenskooperationen punkten, doch im Vergleich zur traditionsreichen Christian-Albrechts-Universität zu Kiel (CAU) kann sie in einigen wesentlichen Bereichen nicht mithalten. Die CAU, gegründet 1665, bietet eine breite akademische Ausbildung und ist führend in der Forschung, besonders in den Natur- und Geisteswissenschaften sowie der Medizin. Während die FH Kiel sich auf anwendungsorientierte Studiengänge konzentriert, profitieren CAU-Studierende von tiefgehender theoretischer Bildung und einer vielfältigen Auswahl an Studienfächern. Zudem öffnet die CAU durch ihre internationale Vernetzung und forschungsorientierte Ausrichtung Türen für akademische Karrieren und wissenschaftliche Exzellenz, was ihr im Vergleich zur FH Kiel einen klaren Vorteil verschafft."
-        android:textSize="34sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.467"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.732" />
-
-    <TextView
-        android:id="@+id/error_text"
-        android:layout_width="409dp"
-        android:layout_height="161dp"
-        android:textSize="48sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.479"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.168" />
 
 
     <ProgressBar
@@ -93,27 +95,42 @@
         android:src="@drawable/forward"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.968"
+        app:layout_constraintHorizontal_bias="0.97"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view"
-        app:layout_constraintVertical_bias="0.602" />
+        app:layout_constraintTop_toBottomOf="@+id/iv"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageButton
+        android:id="@+id/pausebutton"
+        android:layout_width="157dp"
+        android:layout_height="171dp"
+        android:backgroundTint="#00FFFFFF"
+        android:scaleType="fitStart"
+        android:src="@drawable/pause"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.88"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv"
+        app:layout_constraintVertical_bias="1.0" />
 
     <HorizontalScrollView
         android:id="@+id/iv"
-        android:layout_width="1355dp"
-        android:layout_height="342dp"
-        app:layout_constraintBottom_toTopOf="@+id/text_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.463"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintTop_toBottomOf="@+id/rectangle_at_the_top"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_weight="6">
+
         <LinearLayout
+            android:id="@+id/img"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/img"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"></LinearLayout>
     </HorizontalScrollView>
 
 

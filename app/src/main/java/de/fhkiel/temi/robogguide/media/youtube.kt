@@ -6,8 +6,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
 
 fun getID(url: String): String{
-    val urlFrags  = url.split("/")
-    return urlFrags[urlFrags.size - 1].split("?")[0];
+return url.split("=")[1]
 }
 
 class YoutubePlayerListener : YouTubePlayerListener {

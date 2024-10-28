@@ -59,7 +59,6 @@ class RoundTrip(
             val ttsRequest: TtsRequest = TtsRequest.create(speech = "Entschuldigung, hier komme ich nicht durch!", isShowOnConversationLayer = false)
             mRobot.speak(ttsRequest)
         }
-         else if (descriptionId == 500) activity.findViewById<TextView>(R.id.error_text).text = ""
 
     }
 }

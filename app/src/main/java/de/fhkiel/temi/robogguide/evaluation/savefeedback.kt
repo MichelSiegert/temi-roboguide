@@ -16,7 +16,6 @@ fun saveToFile(context: Context, fileContent: String) {
     val file = File(context.filesDir, fileName)
 
     try {
-        // Create a FileOutputStream to write the content
         FileOutputStream(file, true).use { outputStream ->
             outputStream.write(fileContent.toByteArray())
             outputStream.flush()

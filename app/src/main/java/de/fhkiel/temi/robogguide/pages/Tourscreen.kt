@@ -38,12 +38,12 @@ class Tourscreen(private val context: Activity,
                  private val isAusführlich: Boolean = false,
                  private val locations : List<String>,
 ) {
-
     private val database = DatabaseHandler.getDb()!!
     private val trip = RoundTrip(robot, 0, locations, context, ::handleBackAction, ::tryAgain, ::continueTour, ::progressTour)
     private val bar: ProgressBar
     private val speaking = Speaker(::progressTour)
     private val youtubeHandlers: MutableList<YoutubePlayerListener>  = mutableListOf()
+
 
     init {
         context.setContentView(R.layout.tour_screen)
@@ -82,8 +82,8 @@ class Tourscreen(private val context: Activity,
     }
 
     private fun updateText(information: List<String>){
-        context.findViewById<TextView>(R.id.text_view).text = information[0]
-        context.findViewById<TextView>(R.id.title_view).text = information[1]
+        context.findViewById<TextView>(R.id.text_view)?.text = information[0]
+        context.findViewById<TextView>(R.id.title_view)?.text = information[1]
         loadImages(information[2])
     }
 
@@ -99,7 +99,7 @@ class Tourscreen(private val context: Activity,
             trip.index = index
             bar.progress = trip.index * 100 / locations.size
             val request = database.getTextsOfTransfer(locations[trip.index], isAusführlich)
-            if(request.isNotEmpty()){
+            if(request.all { it.isNotBlank() }){
                 updateText((request))
                 val ttsRequest = TtsRequest.create(
                     speech = request[0],
@@ -117,27 +117,30 @@ class Tourscreen(private val context: Activity,
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun progressTour(){
-        GlobalScope.launch {
-            delay(2000)
-            withContext(Dispatchers.Main) {
-                if(trip.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
-                    speaking.lastStatus ==  TtsRequest.Status.COMPLETED &&
-                    youtubeHandlers.all{ !it.isRunning} ){
-                    youtubeHandlers.clear()
+        if(!(trip.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
+            speaking.lastStatus ==  TtsRequest.Status.COMPLETED))return
+        speaking.lastStatus = TtsRequest.Status.STARTED
 
-                    speaking.lastStatus = TtsRequest.Status.STARTED
-                    if(trip.queue.size > 0 ){
-                        val next  = trip.queue.removeAt(0)
-                        updateText(next)
-                        val ttsRequest = TtsRequest.create(
-                            speech = next[0],
-                            isShowOnConversationLayer = false)
-                        robot.speak(ttsRequest)
-                    } else {
-                        continueTour()
+        GlobalScope.launch {
+                withContext(Dispatchers.Main) {
+                    while(true) {
+                        delay(10000)
+                        if(youtubeHandlers.all{ !it.isRunning} ){
+                        youtubeHandlers.clear()
+
+                        if(trip.queue.size > 0 ){
+                            val next  = trip.queue.removeAt(0)
+                            updateText(next)
+                            val ttsRequest = TtsRequest.create(
+                                speech = next[0],
+                                isShowOnConversationLayer = false)
+                            robot.speak(ttsRequest)
+                        } else {
+                            continueTour()
+                        }
+                            break
                     }
                 }
-
             }
         }
     }
@@ -155,8 +158,8 @@ class Tourscreen(private val context: Activity,
             if(url.contains("youtube.com/")){
                 val youtubePlayerView = YouTubePlayerView(context)
 
-                val widthInPixels = 600
-                val heightInPixels = 400
+                val widthInPixels = 1066
+                val heightInPixels = 600
                 val layoutParams = ViewGroup.LayoutParams(widthInPixels, heightInPixels)
                 layoutParams.width = widthInPixels
                 layoutParams.height = heightInPixels
@@ -175,8 +178,8 @@ class Tourscreen(private val context: Activity,
                 val imageView = ImageView(context)
 
                 val layoutParams = LinearLayout.LayoutParams(
-                    400,
-                    400
+                    600,
+                    600
                 )
                 imageView.layoutParams = layoutParams
 
