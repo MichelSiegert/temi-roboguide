@@ -180,7 +180,7 @@ class Tourscreen(private val context: Activity,
     private fun loadImages(id: String){
         val images = context.findViewById<LinearLayout>(R.id.img)
         val pics = database.getMediaOfText(id)
-        images.removeAllViews()
+        images?.removeAllViews()
         for (url in pics) {
             if(url.contains("youtube.com/")){
                 val youtubePlayerView = YouTubePlayerView(context)
