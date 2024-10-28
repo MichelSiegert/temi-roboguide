@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
 import android.view.ViewGroup
-import android.webkit.WebView
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -20,6 +19,7 @@ import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener
 import de.fhkiel.temi.robogguide.R
 import de.fhkiel.temi.robogguide.Routes
 import de.fhkiel.temi.robogguide.database.DatabaseHandler
+import de.fhkiel.temi.robogguide.media.YoutubePlayerListener
 import de.fhkiel.temi.robogguide.media.getID
 import de.fhkiel.temi.robogguide.media.downloadImage
 import de.fhkiel.temi.robogguide.triplogic.RoundTrip
@@ -43,6 +43,7 @@ class Tourscreen(private val context: Activity,
     private val trip = RoundTrip(robot, 0, locations, context, ::handleBackAction, ::tryAgain, ::continueTour, ::progressTour)
     private val bar: ProgressBar
     private val speaking = Speaker(::progressTour)
+    private val youtubeHandlers: MutableList<YoutubePlayerListener>  = mutableListOf()
 
     init {
         context.setContentView(R.layout.tour_screen)
@@ -119,9 +120,11 @@ class Tourscreen(private val context: Activity,
         GlobalScope.launch {
             delay(2000)
             withContext(Dispatchers.Main) {
-                Log.i("success?", trip.lastLocationStatus + speaking.lastStatus.toString())
                 if(trip.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
-                    speaking.lastStatus ==  TtsRequest.Status.COMPLETED){
+                    speaking.lastStatus ==  TtsRequest.Status.COMPLETED &&
+                    youtubeHandlers.all{ !it.isRunning} ){
+                    youtubeHandlers.clear()
+
                     speaking.lastStatus = TtsRequest.Status.STARTED
                     if(trip.queue.size > 0 ){
                         val next  = trip.queue.removeAt(0)
@@ -130,6 +133,8 @@ class Tourscreen(private val context: Activity,
                             speech = next[0],
                             isShowOnConversationLayer = false)
                         robot.speak(ttsRequest)
+                    } else {
+                        continueTour()
                     }
                 }
 
@@ -160,6 +165,8 @@ class Tourscreen(private val context: Activity,
                 val listener: YouTubePlayerListener = object : AbstractYouTubePlayerListener() {
                     override fun onReady(youTubePlayer: YouTubePlayer) {
                         youTubePlayer.cueVideo(getID(url),0f)
+                        youtubeHandlers.add(YoutubePlayerListener())
+                        youTubePlayer.addListener(youtubeHandlers[youtubeHandlers.size - 1])
                     }
                 }
                 youtubePlayerView.initialize(listener)
