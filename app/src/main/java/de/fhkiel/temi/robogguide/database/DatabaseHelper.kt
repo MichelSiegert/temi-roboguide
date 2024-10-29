@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import de.fhkiel.temi.robogguide.Routes
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
@@ -388,5 +389,38 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
             cursor.close()
         }
         return resultList.toTypedArray()
+    }
+
+    @SuppressLint("Range")
+    fun getImageOfLocation(location: String): String {
+        var resultList: String = ""
+
+        val locationID = Routes.map.filter { it.value == location}.toList()[0].first
+
+        database?.let { db ->
+            val cursor = db.rawQuery(
+                "SELECT url\n" +
+                        "FROM MEDIA " +
+                        "INNER JOIN TEXTS ON TEXTS.id = MEDIA.texts_id "+
+                        "WHERE texts.locations_id = ? AND " +
+                        "MEDIA.url NOT LIKE '%youtube%' "+
+                        "LIMIT 1;", arrayOf(locationID)
+            )
+
+            if (cursor == null || cursor.count == 0) {
+                cursor?.close()
+                return ""
+            }
+
+            if (cursor.moveToFirst()) {
+                do {
+                    resultList= (cursor.getString(cursor.getColumnIndex("url"))
+                    )
+                } while (cursor.moveToNext())
+            }
+
+            cursor.close()
+        }
+        return resultList
     }
 }

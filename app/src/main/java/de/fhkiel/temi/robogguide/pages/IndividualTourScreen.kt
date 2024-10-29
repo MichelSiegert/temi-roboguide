@@ -16,7 +16,7 @@ class IndividualTourScreen(
     fun handleIndivTourScreen() {
         activity.setContentView(R.layout.individual_tour_planner)
 
-        val layout = activity.findViewById<LinearLayout>(R.id.listoflocations)
+        val layout = activity.findViewById<LinearLayout>(R.id.listoflocations   )
         val locationToggleManager = LocationToggleManager(activity, mRobot)
         locationToggleManager.populateLocationToggles(layout)
 
