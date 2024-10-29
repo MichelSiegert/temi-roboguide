@@ -107,6 +107,7 @@ class Tourscreen(private val context: Activity,
 
         // next location
         movementHandler.index = (if(isFirst) movementHandler.index else movementHandler.index+1)
+
         if(movementHandler.index == locations.size){
             //Eval
             robot.removeOnGoToLocationStatusChangedListener(movementHandler)
@@ -157,23 +158,23 @@ class Tourscreen(private val context: Activity,
     @OptIn(DelicateCoroutinesApi::class)
     private fun continueTourWhenReady(){
             if (movementHandler.isPaused) return
-            if (!(movementHandler.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
+        if (!(movementHandler.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
                         speaker.lastStatus == TtsRequest.Status.COMPLETED)) return
 
-        speaker.lastStatus = TtsRequest.Status.STARTED
         GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     while(true) {
                         delay(10000)
-                        youtubeHandlers.clear()
+                        if(!(movementHandler.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
+                                    speaker.lastStatus == TtsRequest.Status.COMPLETED)) break
+                        speaker.lastStatus = TtsRequest.Status.STARTED
+
                         if(movementHandler.isPaused) continue
-                        if(youtubeHandlers.all{ !it.isRunning} ) {
-                            youtubeHandlers.clear()
-                            processTourQueue()
-                            break
-                        } else {
-                            proceedToNextStop()
-                        }
+                        if(youtubeHandlers.any{ it.isRunning} ) continue
+                        youtubeHandlers.clear()
+
+                        processTourQueue()
+                        break
                 }
             }
         }
@@ -188,7 +189,8 @@ class Tourscreen(private val context: Activity,
 
 
     private fun processTourQueue() {
-            if(movementHandler.queue.size > 0 ){
+        speaker.lastStatus = TtsRequest.Status.STARTED
+        if(movementHandler.queue.size > 0 ){
                 val next  = movementHandler.queue.removeAt(0)
                 updateText(next)
                 speak(robot, next[0])
