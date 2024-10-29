@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#f5f5f5"
     tools:context=".MainActivity">
 
     <View
@@ -17,6 +18,7 @@
 
     <ScrollView
         android:id="@+id/horizontalScrollView"
+        android:layout_width="1250dp"
         android:layout_height="243dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/continuebutton"
@@ -24,15 +26,14 @@
         app:layout_constraintStart_toEndOf="@+id/pausebutton"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.996"
-        app:layout_constraintVertical_weight="4"
-        android:layout_width="1250dp">
+        app:layout_constraintVertical_weight="4">
 
         <TextView
             android:id="@+id/text_view"
+            android:layout_width="match_parent"
             android:layout_height="168dp"
             android:fadeScrollbars="true"
             android:isScrollContainer="true"
-            android:layout_width="match_parent"
             android:text="Die Fachhochschule (FH) Kiel mag durch ihre praxisorientierte Ausbildung und Unternehmenskooperationen punkten, doch im Vergleich zur traditionsreichen Christian-Albrechts-Universität zu Kiel (CAU) kann sie in einigen wesentlichen Bereichen nicht mithalten. Die CAU, gegründet 1665, bietet eine breite akademische Ausbildung und ist führend in der Forschung, besonders in den Natur- und Geisteswissenschaften sowie der Medizin. Während die FH Kiel sich auf anwendungsorientierte Studiengänge konzentriert, profitieren CAU-Studierende von tiefgehender theoretischer Bildung und einer vielfältigen Auswahl an Studienfächern. Zudem öffnet die CAU durch ihre internationale Vernetzung und forschungsorientierte Ausrichtung Türen für akademische Karrieren und wissenschaftliche Exzellenz, was ihr im Vergleich zur FH Kiel einen klaren Vorteil verschafft."
             android:textSize="34sp"
             app:layout_constraintBottom_toBottomOf="parent"

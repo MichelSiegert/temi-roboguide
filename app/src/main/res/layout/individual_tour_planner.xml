@@ -5,7 +5,8 @@
     android:id="@+id/all_locations"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity" >
+    android:background="#f5f5f5"
+    tools:context=".MainActivity">
 
     <Button
         android:id="@+id/backbuttonindiv"

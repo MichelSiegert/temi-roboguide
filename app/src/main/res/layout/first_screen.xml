@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#f5f5f5"
     tools:context=".MainActivity">
 
     <TextView
@@ -15,10 +16,11 @@
     <Button
         android:id="@+id/easylong"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="852dp"
+        android:layout_width="853dp"
         android:layout_height="430dp"
-        android:background="@android:color/holo_blue_light"
-        android:text="Einfache Führung"
+        android:background="#126416"
+        android:text="Standard Führung"
+        android:textColor="#e0e0e0"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -30,10 +32,11 @@
     <Button
         android:id="@+id/easyshort"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="852dp"
+        android:layout_width="853dp"
         android:layout_height="430dp"
-        android:background="@android:color/holo_orange_dark"
-        android:text="kurze führung"
+        android:background="#f5f5f5"
+        android:text="Schelle Führung"
+        android:textColor="#3f3f3f"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,14 +45,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#444444"
+        android:text="#444444" />
+
     <Button
         android:id="@+id/advancedlong"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="852dp"
+        android:layout_width="853dp"
         android:layout_height="430dp"
-        android:background="@android:color/holo_purple"
-        android:text="Ausführliche Führung"
-        android:textColorLink="#ff000000"
+        android:background="#f5f5f5"
+        android:text="Fortgeschrittenen Führung"
+        android:textColor="#3f3f3f"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,10 +71,11 @@
     <Button
         android:id="@+id/advancedshort"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="852dp"
+        android:layout_width="853dp"
         android:layout_height="430dp"
-        android:background="@android:color/holo_green_light"
-        android:text="Kurze aber ausführlich"
+        android:background="#126416"
+        android:text="Kurze Fortgeschrittenen Führung"
+        android:textColor="#e0e0e0"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -78,7 +89,10 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="1710dp"
         android:layout_height="120dp"
+        android:background="#121212"
         android:text="Individuelle führung"
+        android:textColor="#e0e0e0"
+        android:textSize="32sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
