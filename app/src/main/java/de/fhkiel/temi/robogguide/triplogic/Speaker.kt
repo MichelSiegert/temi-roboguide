@@ -5,6 +5,7 @@ import com.robotemi.sdk.TtsRequest
 
 class Speaker (private val handleUpdate: () -> Unit): Robot.TtsListener  {
     var lastStatus = TtsRequest.Status.COMPLETED
+    var isInterruptQueued = false
     override fun onTtsStatusChanged(ttsRequest: TtsRequest) {
         lastStatus = ttsRequest.status
 

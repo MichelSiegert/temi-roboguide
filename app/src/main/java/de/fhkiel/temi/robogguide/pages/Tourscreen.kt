@@ -39,9 +39,9 @@ class Tourscreen(private val context: Activity,
                  private val locations : List<String>,
 ) {
     private val database = DatabaseHandler.getDb()!!
-    private val trip = RoundTrip(robot, 0, locations, context, ::handleBackAction, ::tryAgain, ::continueTour, ::progressTour, ::hasFinishedSpeaking)
+    private val trip = RoundTrip(robot, 0, locations, context, ::handleBackAction, ::tryAgain, ::continueTour, ::progressTour, ::handleSpeechInterrupt)
     private val bar: ProgressBar
-    private val speaking = Speaker(::progressTour)
+    private val speaker = Speaker(::progressTour)
     private val youtubeHandlers: MutableList<YoutubePlayerListener>  = mutableListOf()
 
 
@@ -49,7 +49,7 @@ class Tourscreen(private val context: Activity,
         context.setContentView(R.layout.tour_screen)
         bar = context.findViewById(R.id.progressBar)
 
-        robot.addTtsListener(speaking)
+        robot.addTtsListener(speaker)
     }
     @SuppressLint("SetJavaScriptEnabled")
     fun handleTourScreen() {
@@ -65,14 +65,14 @@ class Tourscreen(private val context: Activity,
 
         val continueButton = context.findViewById<ImageButton>(R.id.continuebutton)
         continueButton.setOnClickListener{
-            continueTour()
+            progressTour(true)
         }
 
         val pauseButton =  context.findViewById<ImageButton>(R.id.pausebutton)
         pauseButton.setOnClickListener{
             trip.isPaused  = !trip.isPaused
             if(!trip.isPaused &&
-                speaking.lastStatus === TtsRequest.Status.COMPLETED &&
+                speaker.lastStatus === TtsRequest.Status.COMPLETED &&
                 trip.lastLocationStatus === OnGoToLocationStatusChangedListener.COMPLETE)
                 progressTour()
         }
@@ -82,7 +82,7 @@ class Tourscreen(private val context: Activity,
     private fun handleBackAction() {
         handleInitScreen()
         robot.removeOnGoToLocationStatusChangedListener(trip)
-        robot.removeTtsListener(speaking)
+        robot.removeTtsListener(speaker)
         robot.goTo(Routes.start, false)
         val ttsRequest = TtsRequest.create(
             speech = "Okay! Ich gehe dann wieder zum Anfang. Viel Spaß im Museum!",
@@ -101,12 +101,12 @@ class Tourscreen(private val context: Activity,
         trip.queue.clear()
         trip.lastLocationStatus = "ABORT"
         trip.isPaused = false
-        speaking.lastStatus = TtsRequest.Status.STARTED
+        speaker.lastStatus = TtsRequest.Status.STARTED
         robot.cancelAllTtsRequests()
         val index = if(isFirst) trip.index else trip.index+1
         if(index == locations.size){
             robot.removeOnGoToLocationStatusChangedListener(trip)
-            robot.removeTtsListener(speaking)
+            robot.removeTtsListener(speaker)
             val eval = EvalScreen(context, robot)
             eval.initScreen()
         } else {
@@ -129,16 +129,19 @@ class Tourscreen(private val context: Activity,
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    private fun hasFinishedSpeaking() {
-        if(speaking.lastStatus != TtsRequest.Status.COMPLETED){
+    private fun handleSpeechInterrupt() {
+        if(speaker.lastStatus != TtsRequest.Status.COMPLETED &&
+            !speaker.isInterruptQueued){
+            speaker.isInterruptQueued = true
             GlobalScope.launch {
                 withContext(Dispatchers.Main) { while (true){
                     delay(200)
-                    if(speaking.lastStatus === TtsRequest.Status.COMPLETED) {
+                    if(speaker.lastStatus === TtsRequest.Status.COMPLETED) {
                         val ttsRequest = TtsRequest.create(
                             speech = context.findViewById<TextView>(R.id.text_view)?.text.toString(),
                             isShowOnConversationLayer = false)
                         robot.speak(ttsRequest)
+                        speaker.isInterruptQueued = false
                         break
                         }
                     }
@@ -148,17 +151,20 @@ class Tourscreen(private val context: Activity,
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    private fun progressTour(){
-        if(trip.isPaused) return
-        if(!(trip.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
-            speaking.lastStatus ==  TtsRequest.Status.COMPLETED))return
-        speaking.lastStatus = TtsRequest.Status.STARTED
-
+    private fun progressTour(byUserInput: Boolean = false){
+        if(!byUserInput) {
+            if (trip.isPaused) return
+            if (!(trip.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
+                        speaker.lastStatus == TtsRequest.Status.COMPLETED)) return
+        } else {
+            robot.cancelAllTtsRequests()
+        }
+        speaker.lastStatus = TtsRequest.Status.STARTED
         GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     while(true) {
                         if(trip.isPaused) break
-                        delay(10000)
+                        if(!byUserInput)delay(10000)
                         if(youtubeHandlers.all{ !it.isRunning} ){
                         youtubeHandlers.clear()
 
@@ -180,7 +186,7 @@ class Tourscreen(private val context: Activity,
     }
 
     private fun tryAgain(){
-        if(speaking.lastStatus === TtsRequest.Status.COMPLETED) {
+        if(speaker.lastStatus === TtsRequest.Status.COMPLETED) {
             val ttsRequest = TtsRequest.create(
                 speech = context.findViewById<TextView>(R.id.text_view)?.text.toString(),
                 isShowOnConversationLayer = false)
