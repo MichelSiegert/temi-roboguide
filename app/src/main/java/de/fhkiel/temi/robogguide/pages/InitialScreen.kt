@@ -20,22 +20,22 @@ class InitialScreen(
 
         context.findViewById<Button>(R.id.easylong).setOnClickListener {
             val tourScreen = Tourscreen(context, robot, ::handleInitScreen, false, Routes.route)
-            tourScreen.handleTourScreen()
+            tourScreen.initializeTourScreen()
         }
 
         context.findViewById<Button>(R.id.easyshort).setOnClickListener {
             val tourScreen = Tourscreen(context, robot, ::handleInitScreen,  false, Routes.importantRoute)
-            tourScreen.handleTourScreen()
+            tourScreen.initializeTourScreen()
         }
 
         context.findViewById<Button>(R.id.advancedlong).setOnClickListener {
             val tourScreen = Tourscreen(context, robot, ::handleInitScreen, true, Routes.route)
-            tourScreen.handleTourScreen()
+            tourScreen.initializeTourScreen()
         }
 
         context.findViewById<Button>(R.id.advancedshort).setOnClickListener {
             val tourScreen = Tourscreen(context, robot, ::handleInitScreen, true, Routes.importantRoute)
-            tourScreen.handleTourScreen()
+            tourScreen.initializeTourScreen()
         }
     }
 }

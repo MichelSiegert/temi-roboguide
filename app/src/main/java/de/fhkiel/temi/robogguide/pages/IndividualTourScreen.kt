@@ -29,7 +29,7 @@ class IndividualTourScreen(
         startTour.setOnClickListener{
             val customRoute = Routes.route.filter { locationToggleManager.toggledList.contains( it) }
             val tour = Tourscreen(activity, mRobot, handleInitScreen, isAusführlich = true, customRoute)
-            tour.handleTourScreen()
+            tour.initializeTourScreen()
         }
     }
 }

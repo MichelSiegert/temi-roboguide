@@ -7,9 +7,8 @@ import android.widget.Toast
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.TtsRequest
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener
-import kotlin.reflect.KFunction0
 
-class RoundTrip(
+class MovementHandler(
     private val mRobot: Robot,
     var index: Int = 0,
     locations: List<String>,

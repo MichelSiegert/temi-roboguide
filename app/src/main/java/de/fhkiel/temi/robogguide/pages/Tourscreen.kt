@@ -2,7 +2,6 @@ package de.fhkiel.temi.robogguide.pages
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.util.Log
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -19,10 +18,12 @@ import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener
 import de.fhkiel.temi.robogguide.R
 import de.fhkiel.temi.robogguide.Routes
 import de.fhkiel.temi.robogguide.database.DatabaseHandler
+import de.fhkiel.temi.robogguide.helper.speak
+import de.fhkiel.temi.robogguide.helper.speakCurrent
 import de.fhkiel.temi.robogguide.media.YoutubePlayerListener
 import de.fhkiel.temi.robogguide.media.getID
 import de.fhkiel.temi.robogguide.media.downloadImage
-import de.fhkiel.temi.robogguide.triplogic.RoundTrip
+import de.fhkiel.temi.robogguide.triplogic.MovementHandler
 import de.fhkiel.temi.robogguide.triplogic.Speaker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -39,9 +40,9 @@ class Tourscreen(private val context: Activity,
                  private val locations : List<String>,
 ) {
     private val database = DatabaseHandler.getDb()!!
-    private val trip = RoundTrip(robot, 0, locations, context, ::handleBackAction, ::tryAgain, ::continueTour, ::progressTour, ::handleSpeechInterrupt)
+    private val movementHandler = MovementHandler(robot, 0, locations, context, ::handleBackAction, ::tryAgain, ::proceedToNextStop, ::continueTourWhenReady, ::handleSpeechInterrupt)
     private val bar: ProgressBar
-    private val speaker = Speaker(::progressTour)
+    private val speaker = Speaker(::continueTourWhenReady)
     private val youtubeHandlers: MutableList<YoutubePlayerListener>  = mutableListOf()
 
 
@@ -52,10 +53,10 @@ class Tourscreen(private val context: Activity,
         robot.addTtsListener(speaker)
     }
     @SuppressLint("SetJavaScriptEnabled")
-    fun handleTourScreen() {
+    fun initializeTourScreen() {
 
-        robot.addOnGoToLocationStatusChangedListener(trip)
-        continueTour(true)
+        robot.addOnGoToLocationStatusChangedListener(movementHandler)
+        proceedToNextStop(true)
 
          val backButton = context.findViewById<ImageButton>(R.id.backbutton)
         backButton.setOnClickListener {
@@ -65,66 +66,71 @@ class Tourscreen(private val context: Activity,
 
         val continueButton = context.findViewById<ImageButton>(R.id.continuebutton)
         continueButton.setOnClickListener{
-            progressTour(true)
+            processTourQueue()
         }
 
         val pauseButton =  context.findViewById<ImageButton>(R.id.pausebutton)
         pauseButton.setOnClickListener{
-            trip.isPaused  = !trip.isPaused
-            if(!trip.isPaused &&
-                speaker.lastStatus === TtsRequest.Status.COMPLETED &&
-                trip.lastLocationStatus === OnGoToLocationStatusChangedListener.COMPLETE)
-                progressTour()
+            movementHandler.isPaused  = !movementHandler.isPaused
+            if(!movementHandler.isPaused){
+                robot.goTo(locations[movementHandler.index], false)
+                if(speaker.lastStatus != TtsRequest.Status.COMPLETED) speakCurrent(context, robot)
+            }
+            else {
+                robot.cancelAllTtsRequests()
+                robot.stopMovement()
+            }
         }
-
     }
 
     private fun handleBackAction() {
         handleInitScreen()
-        robot.removeOnGoToLocationStatusChangedListener(trip)
+        robot.removeOnGoToLocationStatusChangedListener(movementHandler)
         robot.removeTtsListener(speaker)
         robot.goTo(Routes.start, false)
-        val ttsRequest = TtsRequest.create(
-            speech = "Okay! Ich gehe dann wieder zum Anfang. Viel Spaß im Museum!",
-            isShowOnConversationLayer = false)
-        robot.speak(ttsRequest)
-        Log.i("what", ttsRequest.status.toString())
+        speak(robot,  "Okay! Ich gehe dann wieder zum Anfang. Viel Spaß im Museum!")
     }
 
     private fun updateText(information: List<String>){
-        context.findViewById<TextView>(R.id.text_view)?.text = information[0]
-        context.findViewById<TextView>(R.id.title_view)?.text = information[1]
-        loadImages(information[2])
+            context.findViewById<TextView>(R.id.text_view)?.text = information[0]
+            context.findViewById<TextView>(R.id.title_view)?.text = information[1]
+            loadImages(information[2])
     }
 
-    private fun continueTour(isFirst: Boolean = false){
-        trip.queue.clear()
-        trip.lastLocationStatus = "ABORT"
-        trip.isPaused = false
+    private fun proceedToNextStop(isFirst: Boolean = false){
+        //setup
+        movementHandler.queue.clear()
+        movementHandler.lastLocationStatus = "ABORT"
+        movementHandler.isPaused = false
         speaker.lastStatus = TtsRequest.Status.STARTED
         robot.cancelAllTtsRequests()
-        val index = if(isFirst) trip.index else trip.index+1
-        if(index == locations.size){
-            robot.removeOnGoToLocationStatusChangedListener(trip)
+
+        // next location
+        movementHandler.index = (if(isFirst) movementHandler.index else movementHandler.index+1)
+        if(movementHandler.index == locations.size){
+            //Eval
+            robot.removeOnGoToLocationStatusChangedListener(movementHandler)
             robot.removeTtsListener(speaker)
             val eval = EvalScreen(context, robot)
             eval.initScreen()
         } else {
-            trip.index = index
-            bar.progress = trip.index * 100 / locations.size
-            val request = database.getTextsOfTransfer(locations[trip.index], isAusführlich)
+            //visual update
+            bar.progress = movementHandler.index * 100 / locations.size
+
+            //What should be displayed on the transfer?
+            val request = database.getTextsOfTransfer(locations[movementHandler.index], isAusführlich)
             if(request.all { it.isNotBlank() }){
                 updateText((request))
-                val ttsRequest = TtsRequest.create(
-                    speech = request[0],
-                    isShowOnConversationLayer = false)
-                robot.speak(ttsRequest)
+                speak(robot, request[0])
             } else {
-                updateText(database.getTextsOfLocation(locations[trip.index], isAusführlich))
+                updateText(database.getTextsOfLocation(locations[movementHandler.index], isAusführlich))
+                speaker.lastStatus = TtsRequest.Status.COMPLETED
             }
-            trip.queue.add(database.getTextsOfLocation(locations[trip.index], isAusführlich))
-            trip.queue.addAll(database.getTextsOfItems(locations[trip.index], isAusführlich))
-            robot.goTo(locations[trip.index], false)
+
+            //creating queue
+            movementHandler.queue.add(database.getTextsOfLocation(locations[movementHandler.index], isAusführlich))
+            movementHandler.queue.addAll(database.getTextsOfItems(locations[movementHandler.index], isAusführlich))
+            robot.goTo(locations[movementHandler.index], false)
         }
     }
 
@@ -134,13 +140,11 @@ class Tourscreen(private val context: Activity,
             !speaker.isInterruptQueued){
             speaker.isInterruptQueued = true
             GlobalScope.launch {
-                withContext(Dispatchers.Main) { while (true){
+                withContext(Dispatchers.Main) {
+                    while (true){
                     delay(200)
                     if(speaker.lastStatus === TtsRequest.Status.COMPLETED) {
-                        val ttsRequest = TtsRequest.create(
-                            speech = context.findViewById<TextView>(R.id.text_view)?.text.toString(),
-                            isShowOnConversationLayer = false)
-                        robot.speak(ttsRequest)
+                        speakCurrent(context,robot)
                         speaker.isInterruptQueued = false
                         break
                         }
@@ -151,35 +155,25 @@ class Tourscreen(private val context: Activity,
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    private fun progressTour(byUserInput: Boolean = false){
-        if(!byUserInput) {
-            if (trip.isPaused) return
-            if (!(trip.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
+    private fun continueTourWhenReady(){
+            if (movementHandler.isPaused) return
+            if (!(movementHandler.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
                         speaker.lastStatus == TtsRequest.Status.COMPLETED)) return
-        } else {
-            robot.cancelAllTtsRequests()
-        }
+
         speaker.lastStatus = TtsRequest.Status.STARTED
         GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     while(true) {
-                        if(trip.isPaused) break
-                        if(!byUserInput)delay(10000)
-                        if(youtubeHandlers.all{ !it.isRunning} ){
+                        delay(10000)
                         youtubeHandlers.clear()
-
-                        if(trip.queue.size > 0 ){
-                            val next  = trip.queue.removeAt(0)
-                            updateText(next)
-                            val ttsRequest = TtsRequest.create(
-                                speech = next[0],
-                                isShowOnConversationLayer = false)
-                            robot.speak(ttsRequest)
-                        } else {
-                            continueTour()
-                        }
+                        if(movementHandler.isPaused) continue
+                        if(youtubeHandlers.all{ !it.isRunning} ) {
+                            youtubeHandlers.clear()
+                            processTourQueue()
                             break
-                    }
+                        } else {
+                            proceedToNextStop()
+                        }
                 }
             }
         }
@@ -187,14 +181,21 @@ class Tourscreen(private val context: Activity,
 
     private fun tryAgain(){
         if(speaker.lastStatus === TtsRequest.Status.COMPLETED) {
-            val ttsRequest = TtsRequest.create(
-                speech = context.findViewById<TextView>(R.id.text_view)?.text.toString(),
-                isShowOnConversationLayer = false)
-            robot.speak(ttsRequest)
+            speakCurrent(context, robot)
         }
-        robot.goTo(locations[trip.index])
+        robot.goTo(locations[movementHandler.index])
     }
 
+
+    private fun processTourQueue() {
+            if(movementHandler.queue.size > 0 ){
+                val next  = movementHandler.queue.removeAt(0)
+                updateText(next)
+                speak(robot, next[0])
+            } else {
+                proceedToNextStop()
+        }
+    }
     @SuppressLint("SetJavaScriptEnabled")
     private fun loadImages(id: String){
         val images = context.findViewById<LinearLayout>(R.id.img)
