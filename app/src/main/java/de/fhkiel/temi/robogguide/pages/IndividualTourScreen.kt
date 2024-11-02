@@ -1,8 +1,10 @@
 package de.fhkiel.temi.robogguide.pages
 
 import android.app.Activity
-import android.widget.Button
+import android.util.Log
 import android.widget.GridLayout
+import android.widget.ImageButton
+import android.widget.Toast
 import com.robotemi.sdk.Robot
 import de.fhkiel.temi.robogguide.LocationToggleManager
 import de.fhkiel.temi.robogguide.R
@@ -20,16 +22,27 @@ class IndividualTourScreen(
         val locationToggleManager = LocationToggleManager(activity, mRobot)
         locationToggleManager.populateLocationToggles(layout)
 
-        val back = activity.findViewById<Button>(R.id.backbuttonindiv)
+        val back = activity.findViewById<ImageButton>(R.id.backbuttonindiv)
         back.setOnClickListener {
             handleInitScreen()
         }
 
-        val startTour: Button = activity.findViewById(R.id.start_individual_tour)
+        val startTour: ImageButton = activity.findViewById(R.id.start_individual_tour)
         startTour.setOnClickListener{
             val customRoute = Routes.route.filter { locationToggleManager.toggledList.contains( it) }
-            val tour = Tourscreen(activity, mRobot, handleInitScreen, isAusführlich = true, customRoute)
-            tour.initializeTourScreen()
+            Log.i("CustomRoute", customRoute.joinToString { "$it, " })
+            if(customRoute.isEmpty()) {
+                Toast.makeText(activity, "Man muss mindestens 1 Station Auswählen!", Toast.LENGTH_LONG).show()
+            } else {
+                val tour = Tourscreen(
+                    activity,
+                    mRobot,
+                    handleInitScreen,
+                    isAusführlich = true,
+                    customRoute
+                )
+                tour.initializeTourScreen()
+            }
         }
     }
 }

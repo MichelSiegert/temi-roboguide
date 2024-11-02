@@ -33,11 +33,11 @@ class LocationToggleManager(private val context: Context, private val mRobot: Ro
                 val button = Button(context)
                 button.text = location
                 button.layoutParams = ViewGroup.LayoutParams(400, 300)
-                button.setBackgroundColor(Color.GRAY)
+                button.setBackgroundColor(Color.LTGRAY)
                 button.setOnClickListener{
                     if(toggledList.contains(location)) {
                         toggledList.remove(location)
-                        button.setBackgroundColor(Color.GRAY)
+                        button.setBackgroundColor(Color.LTGRAY)
                     }
                     else {
                         toggledList.add(location)

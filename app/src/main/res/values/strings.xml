@@ -13,4 +13,8 @@
     <string name="es_war_schlecht">Es war schlecht!</string>
     <string name="tour_starten">Tour Starten</string>
     <string name="tour_abbrechen">Tour Abbrechen</string>
+    <string name="erstelle_eine_individuelle_tour">Erstelle eine Individuelle Tour!</string>
+    <string name="fortgeschrittene_tour">Fortgeschrittene Tour?</string>
+    <string name="alle_abw_hlen">Alle Abwählen</string>
+    <string name="alle_ausw_hlen">Alle Auswählen</string>
 </resources>

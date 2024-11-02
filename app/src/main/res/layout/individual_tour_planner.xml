@@ -8,35 +8,26 @@
     android:background="#f5f5f5"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/backbuttonindiv"
-        android:layout_width="247dp"
-        android:layout_height="156dp"
-        android:text="@string/tour_abbrechen"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.003"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
+    <ImageButton
         android:id="@+id/start_individual_tour"
-        android:layout_width="247dp"
-        android:layout_height="156dp"
-        android:text="@string/tour_starten"
+        android:layout_width="157dp"
+        android:layout_height="171dp"
+        android:backgroundTint="#00FFFFFF"
+        android:scaleType="fitStart"
+        android:src="@drawable/forward"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.99"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/start_individual_tour"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/scrollView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button2"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backbuttonindiv"
@@ -52,14 +43,83 @@
                 android:id="@+id/indiv_grid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="200dp"
                 android:columnCount="4"
                 app:layout_constraintBottom_toTopOf="@+id/start_individual_tour"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
 
-                android:layout_marginBottom="200dp"
-                app:layout_constraintTop_toBottomOf="@+id/backbuttonindiv" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/backbuttonindiv">
+
+            </GridLayout>
+
         </LinearLayout>
     </ScrollView>
+
+    <View
+        android:id="@+id/rectangle_at_the_top2"
+        android:layout_width="1928dp"
+        android:layout_height="174dp"
+        android:layout_alignParentTop="true"
+        android:background="#126416"
+        android:visibility="visible"
+        app:layout_constraintVertical_weight="2"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="-34dp" />
+
+    <ImageButton
+        android:id="@+id/backbuttonindiv"
+        android:layout_width="157dp"
+        android:layout_height="171dp"
+        android:backgroundTint="#00FFFFFF"
+        android:scaleType="fitStart"
+        android:src="@drawable/backarrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/erstelle_eine_individuelle_tour"
+        android:textColor="@color/white"
+        android:textSize="60sp"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rectangle_at_the_top2" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="220dp"
+        android:layout_height="180dp"
+        android:layout_marginEnd="36dp"
+        android:layout_marginBottom="50dp"
+        android:text="@string/alle_ausw_hlen"
+        app:layout_constraintBottom_toTopOf="@+id/start_individual_tour"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="220dp"
+        android:layout_height="180dp"
+        android:layout_marginEnd="36dp"
+        android:text="@string/alle_abw_hlen"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="220dp"
+        android:layout_height="180dp"
+        android:layout_marginEnd="36dp"
+        android:text="@string/fortgeschrittene_tour"
+        app:layout_constraintBottom_toTopOf="@+id/button2"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
