@@ -27,7 +27,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintEnd_toStartOf="@+id/unselectall"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backbuttonindiv"
@@ -94,7 +94,7 @@
         app:layout_constraintTop_toTopOf="@+id/rectangle_at_the_top2" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/selectAll"
         android:layout_width="220dp"
         android:layout_height="180dp"
         android:layout_marginEnd="36dp"
@@ -104,21 +104,21 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/unselectall"
         android:layout_width="220dp"
         android:layout_height="180dp"
         android:layout_marginEnd="36dp"
         android:text="@string/alle_abw_hlen"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/selectAll"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/isadvbutton"
         android:layout_width="220dp"
         android:layout_height="180dp"
         android:layout_marginEnd="36dp"
         android:text="@string/fortgeschrittene_tour"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
+        app:layout_constraintBottom_toTopOf="@+id/unselectall"
         app:layout_constraintEnd_toEndOf="parent" />
 
 
