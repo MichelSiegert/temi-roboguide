@@ -99,6 +99,7 @@
         android:layout_height="180dp"
         android:layout_marginEnd="36dp"
         android:layout_marginBottom="50dp"
+        android:width="220dp"
         android:text="@string/alle_ausw_hlen"
         app:layout_constraintBottom_toTopOf="@+id/start_individual_tour"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -108,6 +109,7 @@
         android:layout_width="220dp"
         android:layout_height="180dp"
         android:layout_marginEnd="36dp"
+        android:width="220dp"
         android:text="@string/alle_abw_hlen"
         app:layout_constraintBottom_toTopOf="@+id/selectAll"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -117,6 +119,7 @@
         android:layout_width="220dp"
         android:layout_height="180dp"
         android:layout_marginEnd="36dp"
+        android:width="220dp"
         android:text="@string/fortgeschrittene_tour"
         app:layout_constraintBottom_toTopOf="@+id/unselectall"
         app:layout_constraintEnd_toEndOf="parent" />
