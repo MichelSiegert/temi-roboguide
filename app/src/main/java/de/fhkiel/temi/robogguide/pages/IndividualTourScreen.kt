@@ -2,7 +2,7 @@ package de.fhkiel.temi.robogguide.pages
 
 import android.app.Activity
 import android.widget.Button
-import android.widget.LinearLayout
+import android.widget.GridLayout
 import com.robotemi.sdk.Robot
 import de.fhkiel.temi.robogguide.LocationToggleManager
 import de.fhkiel.temi.robogguide.R
@@ -16,7 +16,7 @@ class IndividualTourScreen(
     fun handleIndivTourScreen() {
         activity.setContentView(R.layout.individual_tour_planner)
 
-        val layout = activity.findViewById<LinearLayout>(R.id.listoflocations   )
+        val layout = activity.findViewById<GridLayout>(R.id.indiv_grid)
         val locationToggleManager = LocationToggleManager(activity, mRobot)
         locationToggleManager.populateLocationToggles(layout)
 

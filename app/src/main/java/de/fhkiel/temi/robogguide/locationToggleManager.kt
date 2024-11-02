@@ -8,8 +8,8 @@ import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.util.Log
 import android.view.ViewGroup
+import android.widget.GridLayout
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import com.robotemi.sdk.Robot
 import de.fhkiel.temi.robogguide.database.DatabaseHandler
 import de.fhkiel.temi.robogguide.media.downloadImage
@@ -21,21 +21,21 @@ import kotlinx.coroutines.withContext
 class LocationToggleManager(private val context: Context, private val mRobot: Robot?) {
     val toggledList = mutableListOf<String>()
 
-    fun populateLocationToggles(layout: LinearLayout) {
+    fun populateLocationToggles(layout: GridLayout) {
 
         val db = DatabaseHandler.getDb()!!
         mRobot?.locations?.forEach { location ->
             val url = db.getImageOfLocation(location)
-            Log.i("weee", url)
+
             if(location.isEmpty()) return
             CoroutineScope(Dispatchers.IO).launch {
                 val bitmap = downloadImage(url) ?: return@launch
-                val resizedBitmap = resizeBitmap(bitmap!!, 600, 400)
+                val resizedBitmap = resizeBitmap(bitmap, 400, 300)
                 val grayscaleBitmap = convertToGrayscale(resizedBitmap)
 
                 withContext(Dispatchers.Main) {
                     val button = ImageButton(context)
-                    val layoutParams = ViewGroup.LayoutParams(600, 400)
+                    val layoutParams = ViewGroup.LayoutParams(400, 300)
                     button.layoutParams = layoutParams
 
                     button.setImageBitmap(grayscaleBitmap)
@@ -84,5 +84,4 @@ class LocationToggleManager(private val context: Context, private val mRobot: Ro
         return grayscaleBitmap
     }
     }
-
 

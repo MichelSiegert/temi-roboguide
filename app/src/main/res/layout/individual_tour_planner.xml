@@ -12,7 +12,7 @@
         android:id="@+id/backbuttonindiv"
         android:layout_width="247dp"
         android:layout_height="156dp"
-        android:text="Tour Abbrechen"
+        android:text="@string/tour_abbrechen"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.003"
@@ -24,7 +24,7 @@
         android:id="@+id/start_individual_tour"
         android:layout_width="247dp"
         android:layout_height="156dp"
-        android:text="Tour Starten"
+        android:text="@string/tour_starten"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -33,27 +33,30 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <ScrollView
-        android:id="@+id/indiv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/start_individual_tour"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/start_individual_tour"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/backbuttonindiv">
+        app:layout_constraintTop_toBottomOf="@+id/backbuttonindiv"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="MissingConstraints">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/listoflocations"
-                android:layout_width="1000dp"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-            </LinearLayout>
+            <GridLayout
+                android:id="@+id/indiv_grid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:columnCount="4"
+                app:layout_constraintBottom_toTopOf="@+id/start_individual_tour"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/backbuttonindiv" />
         </LinearLayout>
     </ScrollView>
 

@@ -11,4 +11,6 @@
     <string name="it_was_ok">It was OK.</string>
     <string name="it_was_good">Es war gut!</string>
     <string name="es_war_schlecht">Es war schlecht!</string>
+    <string name="tour_starten">Tour Starten</string>
+    <string name="tour_abbrechen">Tour Abbrechen</string>
 </resources>
