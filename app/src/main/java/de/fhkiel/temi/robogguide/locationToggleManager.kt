@@ -3,11 +3,13 @@ package de.fhkiel.temi.robogguide
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.util.Log
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.GridLayout
 import android.widget.ImageButton
 import com.robotemi.sdk.Robot
@@ -27,7 +29,23 @@ class LocationToggleManager(private val context: Context, private val mRobot: Ro
         mRobot?.locations?.forEach { location ->
             val url = db.getImageOfLocation(location)
 
-            if(location.isEmpty()) return
+            if(url.isEmpty()) {
+                val button = Button(context)
+                button.text = location
+                button.layoutParams = ViewGroup.LayoutParams(400, 300)
+                button.setBackgroundColor(Color.GRAY)
+                button.setOnClickListener{
+                    if(toggledList.contains(location)) {
+                        toggledList.remove(location)
+                        button.setBackgroundColor(Color.GRAY)
+                    }
+                    else {
+                        toggledList.add(location)
+                        button.setBackgroundColor(Color.GREEN)
+                    }
+                }
+                layout.addView(button)
+            } else {
             CoroutineScope(Dispatchers.IO).launch {
                 val bitmap = downloadImage(url) ?: return@launch
                 val resizedBitmap = resizeBitmap(bitmap, 400, 300)
@@ -40,7 +58,6 @@ class LocationToggleManager(private val context: Context, private val mRobot: Ro
 
                     button.setImageBitmap(grayscaleBitmap)
                     button.setOnClickListener {
-                        Log.i("moveTo", url)
                         if(toggledList.contains(location)) {
                             toggledList.remove(location)
                             button.setImageBitmap(grayscaleBitmap)
@@ -48,15 +65,14 @@ class LocationToggleManager(private val context: Context, private val mRobot: Ro
                         else {
                             toggledList.add(location)
                             button.setImageBitmap(resizedBitmap)
-
+                            }
                         }
-                        Log.i("Tour", toggledList.toString())
+                        layout.addView(button)
                     }
-                    layout.addView(button)
                 }
             }
         }
-        }
+    }
 
     private fun resizeBitmap(bitmap: Bitmap, width: Int, height: Int): Bitmap {
         return Bitmap.createScaledBitmap(bitmap, width, height, true)
