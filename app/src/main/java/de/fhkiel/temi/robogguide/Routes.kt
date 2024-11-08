@@ -30,7 +30,6 @@ object Routes {
             throw IllegalStateException("Es sollte nur eine startlocation geben, aber es wurden ${startLocationArray.size} gefunden!")
         }
         val startLocation = startLocationArray[0]
-        //TODO: Here needs to be something done where there is more than 1.
         start =startLocation
 
         val tmp = transfers.map { it.first }.toSet()

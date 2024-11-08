@@ -2,6 +2,7 @@ package de.fhkiel.temi.robogguide.pages
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -92,6 +93,7 @@ class Tourscreen(private val context: Activity,
     }
 
     private fun updateText(information: List<String>){
+        Log.i("was", information.joinToString { "$it " })
             context.findViewById<TextView>(R.id.text_view)?.text = information[0]
             context.findViewById<TextView>(R.id.title_view)?.text = information[1]
             loadImages(information[2])
@@ -105,20 +107,16 @@ class Tourscreen(private val context: Activity,
         speaker.lastStatus = TtsRequest.Status.STARTED
         robot.cancelAllTtsRequests()
 
-        // next location
         movementHandler.index = (if(isFirst) movementHandler.index else movementHandler.index+1)
 
         if(movementHandler.index == locations.size){
-            //Eval
             robot.removeOnGoToLocationStatusChangedListener(movementHandler)
             robot.removeTtsListener(speaker)
             val eval = EvalScreen(context, robot)
             eval.initScreen()
         } else {
-            //visual update
             bar.progress = movementHandler.index * 100 / locations.size
 
-            //What should be displayed on the transfer?
             val request = database.getTextsOfTransfer(locations[movementHandler.index], isAusführlich)
             if(request.all { it.isNotBlank() }){
                 updateText((request))
@@ -127,10 +125,13 @@ class Tourscreen(private val context: Activity,
                 updateText(database.getTextsOfLocation(locations[movementHandler.index], isAusführlich))
                 speaker.lastStatus = TtsRequest.Status.COMPLETED
             }
-
-            //creating queue
             movementHandler.queue.add(database.getTextsOfLocation(locations[movementHandler.index], isAusführlich))
             movementHandler.queue.addAll(database.getTextsOfItems(locations[movementHandler.index], isAusführlich))
+            if(bar.progress ==0) {
+                movementHandler.queue.add(listOf("Ich habe jetzt alles zu dieser Station gesagt. wenn ihr hier noch bleiben wollt, drückt auf Den Pause Knopf.", "Ende dieser Station", "-1"))
+            } else {
+                movementHandler.queue.add(listOf("Ich habe jetzt alles gesagt, drücken sie pause wenn sie noch hier bleiben wollen.","ende dieser Station", "-1"))
+            }
             robot.goTo(locations[movementHandler.index], false)
         }
     }
@@ -164,7 +165,7 @@ class Tourscreen(private val context: Activity,
         GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     while(true) {
-                        delay(10000)
+                        delay(8000)
                         if(!(movementHandler.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
                                     speaker.lastStatus == TtsRequest.Status.COMPLETED)) break
                         speaker.lastStatus = TtsRequest.Status.STARTED
@@ -231,7 +232,6 @@ class Tourscreen(private val context: Activity,
                     600
                 )
                 imageView.layoutParams = layoutParams
-
                 CoroutineScope(Dispatchers.IO).launch {
                     val bitmap = downloadImage(url)
                     withContext(Dispatchers.Main) {

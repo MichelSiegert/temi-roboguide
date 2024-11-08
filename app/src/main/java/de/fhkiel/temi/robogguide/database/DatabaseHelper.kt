@@ -189,7 +189,6 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
         return resultList
     }
 
-
     @SuppressLint("Range")
     fun getMediaOfText(id: String): Array<String> {
         val resultList = mutableListOf<String>() // To store the results
@@ -219,7 +218,6 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
         }
         return resultList.toTypedArray()
     }
-
 
     @SuppressLint("Range")
     fun getTextsOfItems(location: String, isAusführlich: Boolean): Array<List<String>> {
@@ -298,8 +296,6 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
         }
         return resultList
     }
-
-
 
     @SuppressLint("Range")
     fun getAllTransfers(): Array<Pair<String, String>> {

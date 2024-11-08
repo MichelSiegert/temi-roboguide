@@ -38,8 +38,8 @@ class MovementHandler(
             mRobot.cancelAllTtsRequests()
 
             val builder = AlertDialog.Builder(activity)
-            builder.setTitle("Confirm Action")
-            builder.setMessage("Wie wollen Sie weiter Verfahren?")
+            builder.setTitle("Ich komme hier gerade nicht weiter.")
+            builder.setMessage("Wie möchten Sie weiter Verfahren?")
 
             builder.setPositiveButton("Station überspringen") { _, _ -> continueFunction()}
             builder.setNeutralButton("Erneut versuchen") { _, _ -> tryAgainFunction()}

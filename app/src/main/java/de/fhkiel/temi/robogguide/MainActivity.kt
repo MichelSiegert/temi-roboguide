@@ -44,8 +44,9 @@ import de.fhkiel.temi.robogguide.pages.InitialScreen
             val activityInfo: ActivityInfo = packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA)
             Robot.getInstance().onStart(activityInfo)
             mRobot?.let { robot-> run {
-                //robot.goTo(robot.locations[0])
                 Routes.initialize(robot)
+                robot.goTo(Routes.start)
+
                 val initScreen = InitialScreen(this,  robot)
                  initScreen.handleInitScreen()
             } }
