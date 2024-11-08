@@ -33,7 +33,6 @@ class MovementHandler(
         descriptionId: Int,
         description: String) {
         lastLocationStatus = status
-        Log.i("Movement", "$descriptionId: $description, $status")
         if(descriptionId == 1003 || descriptionId == 1004 )  {
             mRobot.cancelAllTtsRequests()
 

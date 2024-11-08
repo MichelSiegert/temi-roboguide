@@ -17,7 +17,7 @@ class IndividualTourScreen(
                         private val activity: Activity,
                         private val mRobot: Robot,
                         private val handleInitScreen: () -> Unit) {
-    private var isAusfuhrlich = false
+    private var isAusführlich = false
 
     fun handleIndivTourScreen() {
         activity.setContentView(R.layout.individual_tour_planner)
@@ -32,9 +32,9 @@ class IndividualTourScreen(
         }
         val detailedButton  =activity.findViewById<Button>(R.id.isadvbutton)
         detailedButton.setOnClickListener{
-            if(isAusfuhrlich) detailedButton.setBackgroundColor(Color.LTGRAY)
+            if(isAusführlich) detailedButton.setBackgroundColor(Color.LTGRAY)
                 else detailedButton.setBackgroundColor(Color.GREEN)
-            isAusfuhrlich = !isAusfuhrlich
+            isAusführlich = !isAusführlich
         }
 
         val unselectAll = activity.findViewById<Button>(R.id.unselectall)
@@ -55,7 +55,7 @@ class IndividualTourScreen(
                     activity,
                     mRobot,
                     handleInitScreen,
-                    isAusführlich = isAusfuhrlich,
+                    isAusführlich = isAusführlich,
                     customRoute
                 )
                 tour.initializeTourScreen()

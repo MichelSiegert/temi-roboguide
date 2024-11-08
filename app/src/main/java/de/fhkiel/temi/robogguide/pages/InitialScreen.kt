@@ -6,7 +6,6 @@ import com.robotemi.sdk.Robot
 import de.fhkiel.temi.robogguide.R
 import de.fhkiel.temi.robogguide.Routes
 
-
 class InitialScreen(
     private val context: Activity,
     private val robot: Robot) {

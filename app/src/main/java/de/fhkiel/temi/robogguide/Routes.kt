@@ -18,12 +18,18 @@ object Routes {
 
     private fun calculateRoute(robot:Robot): List<String> {
 
-        map = database.getLocationMap();
+        map = database.getLocationMap()
         var transfers  =database.getAllTransfers()
         transfers.shuffle()
-        transfers = transfers.map { Pair(map[it.first]!!, map[it.second]!!) }.filter { robot.locations.contains(it.first) ||  robot.locations.contains(it.second)  }.toTypedArray()
-        val locationToSet = transfers.map { it.second }.toSet()
-        val startLocationArray = transfers.map { it.first }
+        transfers = transfers
+            .map { Pair(map[it.first]!!, map[it.second]!!) }
+            .filter { robot.locations.contains(it.first) ||  robot.locations.contains(it.second)  }
+            .toTypedArray()
+        val locationToSet = transfers
+            .map { it.second }
+            .toSet()
+        val startLocationArray = transfers
+            .map { it.first }
             .filterNot { locationToSet.contains(it) }
 
         if(startLocationArray.size != 1){
@@ -32,7 +38,9 @@ object Routes {
         val startLocation = startLocationArray[0]
         start =startLocation
 
-        val tmp = transfers.map { it.first }.toSet()
+        val tmp = transfers
+            .map { it.first }
+            .toSet()
         val endLocation = transfers.map { it.second }
             .filterNot { tmp.contains(it) }[0]
 

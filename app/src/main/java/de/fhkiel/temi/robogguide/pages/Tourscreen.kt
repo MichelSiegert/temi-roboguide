@@ -128,9 +128,9 @@ class Tourscreen(private val context: Activity,
             movementHandler.queue.add(database.getTextsOfLocation(locations[movementHandler.index], isAusführlich))
             movementHandler.queue.addAll(database.getTextsOfItems(locations[movementHandler.index], isAusführlich))
             if(bar.progress ==0) {
-                movementHandler.queue.add(listOf("Ich habe jetzt alles zu dieser Station gesagt. wenn ihr hier noch bleiben wollt, drückt auf Den Pause Knopf.", "Ende dieser Station", "-1"))
+                movementHandler.queue.add(listOf("Wenn ihr hier noch bleiben wollt, drückt auf Den Pause Knopf.", "Ende dieser Station", "-1"))
             } else {
-                movementHandler.queue.add(listOf("Ich habe jetzt alles gesagt, drücken sie pause wenn sie noch hier bleiben wollen.","ende dieser Station", "-1"))
+                movementHandler.queue.add(listOf("Drücken sie pause wenn sie noch hier bleiben wollen.","Ende dieser Station", "-1"))
             }
             robot.goTo(locations[movementHandler.index], false)
         }
@@ -158,7 +158,7 @@ class Tourscreen(private val context: Activity,
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun continueTourWhenReady(){
-            if (movementHandler.isPaused) return
+        if (movementHandler.isPaused) return
         if (!(movementHandler.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
                         speaker.lastStatus == TtsRequest.Status.COMPLETED)) return
 

@@ -164,8 +164,9 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
                         "SELECT texts.text, texts.title, texts.id " +
                         "FROM texts " +
                         "INNER JOIN a ON texts.locations_id = a.id " +
-                        "WHERE texts.detailed = ? ",
-                arrayOf(location, if(isAusführlich.toString() == "true" )"1" else "0")
+                        "ORDER BY texts.detailed  "+if(isAusführlich)"DESC " else "ASC " +
+                        "LIMIT 1",
+                arrayOf(location)
             )
 
             if (cursor == null || cursor.count == 0) {
@@ -221,6 +222,7 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
 
     @SuppressLint("Range")
     fun getTextsOfItems(location: String, isAusführlich: Boolean): Array<List<String>> {
+        //TODO: should return multiple.
         val resultList = mutableListOf<List<String>>() // To store the results
 
         database?.let { db ->
@@ -230,8 +232,9 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
                         "FROM items " +
                         "INNER JOIN a ON items.locations_id = a.id " +
                         "INNER JOIN texts ON texts.items_id = items.id " +
-                        "WHERE texts.detailed = ? ",
-                arrayOf(location, if(isAusführlich.toString() == "true" )"1" else "0")
+                        "ORDER BY texts.detailed  "+if(isAusführlich)"DESC " else "ASC " +
+                        "LIMIT 1",
+                arrayOf(location)
             )
 
             if (cursor == null || cursor.count == 0) {
@@ -268,8 +271,9 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
                         "FROM transfers " +
                         "INNER JOIN a ON transfers.location_to = a.id " +
                         "INNER JOIN texts ON texts.transfers_id = transfers.id " +
-                        "WHERE texts.detailed = ? ",
-                arrayOf(location, if(isAusführlich)"1" else "0")
+                        "ORDER BY texts.detailed  "+if(isAusführlich)"DESC " else "ASC " +
+                        "LIMIT 1",
+                arrayOf(location)
             )
 
             if (cursor == null || cursor.count == 0) {
