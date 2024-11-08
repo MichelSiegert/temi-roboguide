@@ -222,7 +222,6 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
 
     @SuppressLint("Range")
     fun getTextsOfItems(location: String, isAusführlich: Boolean): Array<List<String>> {
-        //TODO: should return multiple.
         val resultList = mutableListOf<List<String>>() // To store the results
 
         database?.let { db ->

@@ -2,6 +2,7 @@ package de.fhkiel.temi.robogguide.pages
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.graphics.Color
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -74,12 +75,16 @@ class Tourscreen(private val context: Activity,
         pauseButton.setOnClickListener{
             movementHandler.isPaused  = !movementHandler.isPaused
             if(!movementHandler.isPaused){
+
+                pauseButton.setBackgroundColor(Color.WHITE)
+                pauseButton.setImageResource(R.drawable.pause)
                 robot.goTo(locations[movementHandler.index], false)
                 if(speaker.lastStatus != TtsRequest.Status.COMPLETED) speakCurrent(context, robot)
             }
             else {
                 robot.cancelAllTtsRequests()
                 robot.stopMovement()
+                pauseButton.setImageResource(R.drawable.unpause)
             }
         }
     }
@@ -127,11 +132,6 @@ class Tourscreen(private val context: Activity,
             }
             movementHandler.queue.add(database.getTextsOfLocation(locations[movementHandler.index], isAusführlich))
             movementHandler.queue.addAll(database.getTextsOfItems(locations[movementHandler.index], isAusführlich))
-            if(bar.progress ==0) {
-                movementHandler.queue.add(listOf("Wenn ihr hier noch bleiben wollt, drückt auf Den Pause Knopf.", "Ende dieser Station", "-1"))
-            } else {
-                movementHandler.queue.add(listOf("Drücken sie pause wenn sie noch hier bleiben wollen.","Ende dieser Station", "-1"))
-            }
             robot.goTo(locations[movementHandler.index], false)
         }
     }
@@ -145,7 +145,8 @@ class Tourscreen(private val context: Activity,
                 withContext(Dispatchers.Main) {
                     while (true){
                     delay(200)
-                    if(speaker.lastStatus === TtsRequest.Status.COMPLETED) {
+                    if(speaker.lastStatus === TtsRequest.Status.COMPLETED ||
+                        youtubeHandlers.any{ it.isRunning}) {
                         speakCurrent(context,robot)
                         speaker.isInterruptQueued = false
                         break
@@ -189,6 +190,7 @@ class Tourscreen(private val context: Activity,
     }
 
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun processTourQueue() {
         speaker.lastStatus = TtsRequest.Status.STARTED
         if(movementHandler.queue.size > 0 ){
@@ -196,7 +198,20 @@ class Tourscreen(private val context: Activity,
                 updateText(next)
                 speak(robot, next[0])
             } else {
-                proceedToNextStop()
+            GlobalScope.launch {
+                withContext(Dispatchers.Main) {
+                    val next = listOf("Wenn ihr hier noch bleiben wollt, drückt auf Den Pause Knopf.", "Ende dieser Station", "-1")
+                    speak(robot, next[0])
+                    delay(8000)
+                    while(true){
+                        delay(200)
+                            if( movementHandler.isPaused) continue
+                        proceedToNextStop()
+                        break
+                    }
+                }
+            }
+
         }
     }
     @SuppressLint("SetJavaScriptEnabled")
