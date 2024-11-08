@@ -231,8 +231,8 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
                         "FROM items " +
                         "INNER JOIN a ON items.locations_id = a.id " +
                         "INNER JOIN texts ON texts.items_id = items.id " +
-                        "ORDER BY texts.detailed  "+if(isAusführlich)"DESC " else "ASC " +
-                        "LIMIT 1",
+                        "GROUP BY texts.id " +
+                        "HAVING  " + (if(isAusführlich)"MAX " else "MIN ") + "(texts.detailed)",
                 arrayOf(location)
             )
 
