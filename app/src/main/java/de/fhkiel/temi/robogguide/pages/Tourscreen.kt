@@ -199,7 +199,7 @@ class Tourscreen(private val context: Activity,
                 speak(robot, next[0])
             } else {
                 val cIndex = movementHandler.index
-            if(isManual){
+            if(isManual || movementHandler.index == locations.size - 1){
                 proceedToNextStop()
             } else {
             GlobalScope.launch {
