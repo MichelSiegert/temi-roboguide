@@ -170,7 +170,6 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
             )
 
             if (cursor == null || cursor.count == 0) {
-                Log.i("Robot",location)
                 cursor?.close()
                 return listOf()
             }
@@ -237,7 +236,6 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
             )
 
             if (cursor == null || cursor.count == 0) {
-                Log.i("Robot",location)
                 cursor?.close()
                 return arrayOf()
             }
@@ -276,7 +274,6 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
             )
 
             if (cursor == null || cursor.count == 0) {
-                Log.i("Robot",location)
                 cursor?.close()
                 return listOf("", "", "")
             }
@@ -392,8 +389,7 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
 
     @SuppressLint("Range")
     fun getImageOfLocation(location: String): String {
-        var resultList: String = ""
-
+        var resultList = ""
         val locationID = Routes.map.filter { it.value == location}.toList()[0].first
 
         database?.let { db ->

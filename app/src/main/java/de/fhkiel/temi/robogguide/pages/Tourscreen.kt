@@ -100,7 +100,6 @@ class Tourscreen(private val context: Activity,
     }
 
     private fun updateText(information: List<String>){
-        Log.i("was", information.joinToString { "$it " })
             context.findViewById<TextView>(R.id.text_view)?.text = information[0]
             context.findViewById<TextView>(R.id.title_view)?.text = information[1]
             loadImages(information[2])

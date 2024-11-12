@@ -22,10 +22,12 @@ import kotlinx.coroutines.withContext
 class LocationToggleManager(private val context: Context, private val mRobot: Robot?) {
     val toggledList = mutableListOf<String>()
 
-    fun populateLocationToggles(layout: GridLayout) {
+    fun populateLocationToggles(layout: GridLayout, updateTimestamp: () -> Unit) {
+
 
         val db = DatabaseHandler.getDb()!!
         mRobot?.locations?.forEach { location ->
+            if( Routes.map.filter { it.value == location}.toList().isEmpty()) return
             val url = db.getImageOfLocation(location)
 
             if(url.isEmpty()) {
@@ -35,6 +37,7 @@ class LocationToggleManager(private val context: Context, private val mRobot: Ro
                 button.layoutParams = ViewGroup.LayoutParams(400, 300)
                 button.setBackgroundColor(Color.LTGRAY)
                 button.setOnClickListener{
+                    updateTimestamp()
                     if(toggledList.contains(location)) {
                         toggledList.remove(location)
                         button.tag = 0
@@ -62,6 +65,7 @@ class LocationToggleManager(private val context: Context, private val mRobot: Ro
 
                     button.setImageBitmap(grayscaleBitmap)
                     button.setOnClickListener {
+                        updateTimestamp()
                         if(toggledList.contains(location)) {
                             button.tag = 0
                             toggledList.remove(location)

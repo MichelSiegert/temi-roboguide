@@ -21,7 +21,6 @@ object DatabaseHandler {
 
     fun getDb(): DatabaseHelper?{
         if(database !== null) return database!!
-        Log.i("dbh", "database was not initialized yet!")
         return database
     }
 
