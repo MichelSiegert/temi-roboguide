@@ -47,13 +47,12 @@ class Tourscreen(private val context: Activity,
     private val speaker = Speaker(::continueTourWhenReady)
     private val youtubeHandlers: MutableList<YoutubePlayerListener>  = mutableListOf()
 
-
     init {
         context.setContentView(R.layout.tour_screen)
         bar = context.findViewById(R.id.progressBar)
-
         robot.addTtsListener(speaker)
     }
+
     @SuppressLint("SetJavaScriptEnabled")
     fun initializeTourScreen() {
 
@@ -68,20 +67,23 @@ class Tourscreen(private val context: Activity,
 
         val continueButton = context.findViewById<ImageButton>(R.id.continuebutton)
         continueButton.setOnClickListener{
-            processTourQueue()
+            processTourQueue(true)
         }
 
         val pauseButton =  context.findViewById<ImageButton>(R.id.pausebutton)
         pauseButton.setOnClickListener{
             movementHandler.isPaused  = !movementHandler.isPaused
             if(!movementHandler.isPaused){
-
+                if(speaker.isInterruptQueued){
+                    speakCurrent(context, robot)
+                }
                 pauseButton.setBackgroundColor(Color.WHITE)
                 pauseButton.setImageResource(R.drawable.pause)
                 robot.goTo(locations[movementHandler.index], false)
                 if(speaker.lastStatus != TtsRequest.Status.COMPLETED) speakCurrent(context, robot)
             }
             else {
+                if(speaker.lastStatus !== TtsRequest.Status.COMPLETED)speaker.isInterruptQueued = true;
                 robot.cancelAllTtsRequests()
                 robot.stopMovement()
                 pauseButton.setImageResource(R.drawable.unpause)
@@ -189,31 +191,38 @@ class Tourscreen(private val context: Activity,
         robot.goTo(locations[movementHandler.index])
     }
 
-
     @OptIn(DelicateCoroutinesApi::class)
-    private fun processTourQueue() {
+    private fun processTourQueue(isManual :Boolean = false) {
         speaker.lastStatus = TtsRequest.Status.STARTED
         if(movementHandler.queue.size > 0 ){
                 val next  = movementHandler.queue.removeAt(0)
                 updateText(next)
                 speak(robot, next[0])
             } else {
+                val cIndex = movementHandler.index
+            if(isManual){
+                proceedToNextStop()
+            } else {
             GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     val next = listOf("Wenn ihr hier noch bleiben wollt, drückt auf Den Pause Knopf.", "Ende dieser Station", "-1")
                     speak(robot, next[0])
                     delay(8000)
-                    while(true){
-                        delay(200)
+                    if(cIndex == movementHandler.index) {
+                        while(true){
+                            delay(200)
+                            if(cIndex != movementHandler.index) break
                             if( movementHandler.isPaused) continue
-                        proceedToNextStop()
-                        break
+                            proceedToNextStop()
+                            break
+                        }
                     }
                 }
             }
-
         }
     }
+}
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun loadImages(id: String){
         val images = context.findViewById<LinearLayout>(R.id.img)
