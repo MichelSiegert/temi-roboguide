@@ -34,6 +34,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.Instant
 
 class Tourscreen(private val context: Activity,
                  private val robot: Robot,
@@ -46,6 +47,7 @@ class Tourscreen(private val context: Activity,
     private val bar: ProgressBar
     private val speaker = Speaker(::continueTourWhenReady)
     private val youtubeHandlers: MutableList<YoutubePlayerListener>  = mutableListOf()
+    private var lastTimeStamp = Instant.now()
 
     init {
         context.setContentView(R.layout.tour_screen)
@@ -83,7 +85,9 @@ class Tourscreen(private val context: Activity,
                 if(speaker.lastStatus != TtsRequest.Status.COMPLETED) speakCurrent(context, robot)
             }
             else {
+                lastTimeStamp = Instant.now()
                 if(speaker.lastStatus !== TtsRequest.Status.COMPLETED)speaker.isInterruptQueued = true;
+                asyncGoBackTask()
                 robot.cancelAllTtsRequests()
                 robot.stopMovement()
                 pauseButton.setImageResource(R.drawable.unpause)
@@ -152,6 +156,38 @@ class Tourscreen(private val context: Activity,
                         speaker.isInterruptQueued = false
                         break
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun asyncGoBackTask() {
+        GlobalScope.launch {
+            withContext(Dispatchers.Main) {
+                var step = 0
+                while (true) {
+                    delay(2000)
+                    if (!movementHandler.isPaused || context.findViewById<ImageButton>(R.id.backbutton) == null) break
+                    if (step == 0) {
+                        if (lastTimeStamp.plusSeconds(540).isAfter(Instant.now())) continue
+                        speak(robot, "Hallo, sind sie noch hier?")
+                        step++
+                    }
+                    if (step == 1) {
+                        if (lastTimeStamp.plusSeconds(600).isAfter(Instant.now())) continue
+                        speak(
+                            robot,
+                            "Ich würde gleich zurück fahren wollen, bitte drücken sie auf weiter, um zur nächsten Station zu gehen."
+                        )
+                        step++
+                    } else {
+                        if (lastTimeStamp.plusSeconds(660).isAfter(Instant.now())) continue
+                        val initScreen = InitialScreen(context, robot)
+                        initScreen.handleInitScreen()
+                        robot.goTo(Routes.start)
+                        break
                     }
                 }
             }
