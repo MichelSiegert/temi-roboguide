@@ -1,11 +1,14 @@
 package de.fhkiel.temi.robogguide.triplogic
 
+import CustomDialogClass
 import android.app.Activity
 import android.app.AlertDialog
+import android.widget.Button
 import android.widget.Toast
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.TtsRequest
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener
+import de.fhkiel.temi.robogguide.R
 
 class MovementHandler(
     private val mRobot: Robot,
@@ -36,18 +39,21 @@ class MovementHandler(
         if(descriptionId == 1003 || descriptionId == 1004 || descriptionId == 1005)  {
             mRobot.cancelAllTtsRequests()
 
-            val builder = AlertDialog.Builder(activity)
-            builder.setTitle("Ich komme hier gerade nicht weiter.")
-            builder.setMessage("Wie möchten Sie weiter Verfahren?")
+            val customDialog = CustomDialogClass(activity)
+            customDialog.show()
 
-            builder.setPositiveButton("Station überspringen") { _, _ -> continueFunction()}
-            builder.setNeutralButton("Erneut versuchen") { _, _ -> tryAgainFunction()}
-
-            builder.setNegativeButton("Tour Beenden") { _, _ -> backFunction() }
-
-            // Create and show the dialog
-            val alertDialog = builder.create()
-            alertDialog.show()
+            customDialog.findViewById<Button>(R.id.dialogYes)?.setOnClickListener{
+                backFunction()
+                customDialog.dismiss()
+            }
+            customDialog.findViewById<Button>(R.id.dialogTryAgain)?.setOnClickListener {
+                tryAgainFunction()
+                customDialog.dismiss()
+            }
+            customDialog.findViewById<Button>(R.id.dialogSkip)?.setOnClickListener{
+                continueFunction()
+                customDialog.dismiss()
+            }
         }
         if(descriptionId in 2000..2009){
             Toast.makeText(activity, "Entschuldigung, hier komme ich nicht durch!", Toast.LENGTH_LONG).show()
