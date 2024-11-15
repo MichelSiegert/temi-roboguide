@@ -4,6 +4,7 @@ import GoingBackDialogue
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Color
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
@@ -251,6 +252,7 @@ class Tourscreen(private val context: Activity,
 
                         if(movementHandler.isPaused) continue
                         if(youtubeHandlers.any{ it.isRunning} ) continue
+                        if(lastTimeStamp.plusSeconds(8).isAfter(Instant.now())) continue
                         youtubeHandlers.clear()
 
                         processTourQueue()
@@ -328,7 +330,9 @@ class Tourscreen(private val context: Activity,
                 images.addView(youtubePlayerView)
             } else {
                 val imageView = ImageView(context)
-
+                imageView.setOnClickListener{
+                    lastTimeStamp = Instant.now();
+                }
                 val layoutParams = LinearLayout.LayoutParams(
                     600,
                     600
