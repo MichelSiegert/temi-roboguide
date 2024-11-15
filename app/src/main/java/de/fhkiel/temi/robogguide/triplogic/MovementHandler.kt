@@ -2,7 +2,6 @@ package de.fhkiel.temi.robogguide.triplogic
 
 import CustomDialogClass
 import android.app.Activity
-import android.app.AlertDialog
 import android.widget.Button
 import android.widget.Toast
 import com.robotemi.sdk.Robot

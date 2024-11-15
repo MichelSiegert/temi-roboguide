@@ -7,7 +7,7 @@ import de.fhkiel.temi.robogguide.R
 class CustomDialogClass(context: Context) : Dialog(context) {
 
     init {
-        setCancelable(true)
+        setCancelable(false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
