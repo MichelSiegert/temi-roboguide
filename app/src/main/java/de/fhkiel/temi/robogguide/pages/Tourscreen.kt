@@ -86,7 +86,7 @@ class Tourscreen(private val context: Activity,
             }
             else {
                 lastTimeStamp = Instant.now()
-                if(speaker.lastStatus !== TtsRequest.Status.COMPLETED)speaker.isInterruptQueued = true;
+                if(speaker.lastStatus !== TtsRequest.Status.COMPLETED)speaker.isInterruptQueued = true
                 asyncGoBackTask()
                 robot.cancelAllTtsRequests()
                 robot.stopMovement()
