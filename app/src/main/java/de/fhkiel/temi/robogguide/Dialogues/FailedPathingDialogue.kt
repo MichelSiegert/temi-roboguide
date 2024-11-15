@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.Window
 import de.fhkiel.temi.robogguide.R
 
-class CustomDialogClass(context: Context) : Dialog(context) {
+class FailedPathingDialogue(context: Context) : Dialog(context) {
 
     init {
         setCancelable(false)

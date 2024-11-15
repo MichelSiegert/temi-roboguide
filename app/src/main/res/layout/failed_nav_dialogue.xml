@@ -7,7 +7,7 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="1595dp"
+        android:layout_width="700dp"
         android:layout_height="868dp"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="30dp"
@@ -37,7 +37,7 @@
             android:background="#126416"
             android:clickable="true"
             android:padding="20dp"
-            android:text="zurück zum Anfang"
+            android:text="Die Tour Beenden"
             android:textColor="#ffffff"
             android:textSize="34sp"
             android:textStyle="bold"

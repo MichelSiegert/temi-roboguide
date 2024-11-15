@@ -1,6 +1,6 @@
 package de.fhkiel.temi.robogguide.triplogic
 
-import CustomDialogClass
+import FailedPathingDialogue
 import android.app.Activity
 import android.widget.Button
 import android.widget.Toast
@@ -17,12 +17,15 @@ class MovementHandler(
     private val backFunction: () -> Any,
     private val tryAgainFunction: () -> Any,
     private val continueFunction: () -> Any,
+
     private val tourProgress: () -> Any,
     private val fisnished: ()-> Any
 ) : OnGoToLocationStatusChangedListener {
+
     var isPaused = false
     var hasMovedRecently = true
-        var queue = mutableListOf<List<String>>()
+    var queue = mutableListOf<List<String>>()
+    var isWantedInterrupt = false
     var lastLocationStatus: String = OnGoToLocationStatusChangedListener.START
 
     init {
@@ -35,10 +38,10 @@ class MovementHandler(
         descriptionId: Int,
         description: String) {
         lastLocationStatus = status
-        if(descriptionId == 1003 || descriptionId == 1004 || descriptionId == 1005)  {
+        if(isWantedInterrupt &&(descriptionId == 1003 || descriptionId == 1004 || descriptionId == 1005))  {
             mRobot.cancelAllTtsRequests()
 
-            val customDialog = CustomDialogClass(activity)
+            val customDialog = FailedPathingDialogue(activity)
             customDialog.show()
 
             customDialog.findViewById<Button>(R.id.dialogYes)?.setOnClickListener{

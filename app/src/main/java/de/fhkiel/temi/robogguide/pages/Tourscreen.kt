@@ -1,10 +1,11 @@
 package de.fhkiel.temi.robogguide.pages
 
+import GoingBackDialogue
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Color
-import android.util.Log
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -48,6 +49,7 @@ class Tourscreen(private val context: Activity,
     private val speaker = Speaker(::continueTourWhenReady)
     private val youtubeHandlers: MutableList<YoutubePlayerListener>  = mutableListOf()
     private var lastTimeStamp = Instant.now()
+    private var isAlertDisplayed = false
 
     init {
         context.setContentView(R.layout.tour_screen)
@@ -63,9 +65,44 @@ class Tourscreen(private val context: Activity,
 
          val backButton = context.findViewById<ImageButton>(R.id.backbutton)
         backButton.setOnClickListener {
+            movementHandler.isWantedInterrupt = true
+            robot.stopMovement()
+            robot.cancelAllTtsRequests()
+            movementHandler.isWantedInterrupt = false
             movementHandler.isPaused = true
+            val goingBackDialogue = GoingBackDialogue(context)
+            goingBackDialogue.show()
+            isAlertDisplayed = true
+            goingBackDialogue.findViewById<Button>(R.id.thisLocation).setOnClickListener{
+                movementHandler.queue.clear()
+                proceedToNextStop(true)
 
-            handleBackAction()
+                movementHandler.isPaused = false
+                val pauseButton =  context.findViewById<ImageButton>(R.id.pausebutton)
+                pauseButton.setImageResource(R.drawable.pause)
+
+                goingBackDialogue.dismiss()
+                isAlertDisplayed = false
+            }
+            goingBackDialogue.findViewById<Button>(R.id.lastLocation).setOnClickListener{
+                movementHandler.queue.clear()
+                movementHandler.index = (movementHandler.index - 1).coerceAtLeast(0)
+                proceedToNextStop(true)
+
+                movementHandler.isPaused = false
+                val pauseButton =  context.findViewById<ImageButton>(R.id.pausebutton)
+                pauseButton.setImageResource(R.drawable.pause)
+
+                goingBackDialogue.dismiss()
+                isAlertDisplayed = false
+            }
+            goingBackDialogue.findViewById<Button>(R.id.Leave).setOnClickListener{
+                movementHandler.isPaused = false
+                val pauseButton =  context.findViewById<ImageButton>(R.id.pausebutton)
+                pauseButton.setImageResource(R.drawable.pause)
+                handleBackAction()
+                goingBackDialogue.dismiss()
+            }
         }
 
         val continueButton = context.findViewById<ImageButton>(R.id.continuebutton)
@@ -152,8 +189,11 @@ class Tourscreen(private val context: Activity,
             GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     while (true){
-                    delay(200)
-                    if(speaker.lastStatus === TtsRequest.Status.COMPLETED ||
+                        delay(200)
+                        if(isAlertDisplayed){
+                            break
+                        }
+                        if(speaker.lastStatus === TtsRequest.Status.COMPLETED ||
                         youtubeHandlers.any{ it.isRunning}) {
                         speakCurrent(context,robot)
                         speaker.isInterruptQueued = false
@@ -249,7 +289,7 @@ class Tourscreen(private val context: Activity,
                     if(cIndex == movementHandler.index) {
                         while(true){
                             delay(200)
-                            if(cIndex != movementHandler.index) break
+                            if(cIndex != movementHandler.index  || isAlertDisplayed) break
                             if( movementHandler.isPaused) continue
                             proceedToNextStop()
                             break
