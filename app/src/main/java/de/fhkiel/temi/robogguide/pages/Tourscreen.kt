@@ -1,6 +1,7 @@
 package de.fhkiel.temi.robogguide.pages
 
 import GoingBackDialogue
+import YoutubeVideoDialogue
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Color
@@ -73,6 +74,7 @@ class Tourscreen(private val context: Activity,
             movementHandler.isPaused = true
             val goingBackDialogue = GoingBackDialogue(context)
             goingBackDialogue.show()
+            goingBackDialogue.setOnDismissListener { isAlertDisplayed = false }
             isAlertDisplayed = true
             goingBackDialogue.findViewById<Button>(R.id.thisLocation).setOnClickListener{
                 movementHandler.queue.clear()
@@ -121,6 +123,7 @@ class Tourscreen(private val context: Activity,
         pauseButton.setOnClickListener{
             movementHandler.isPaused  = !movementHandler.isPaused
             if(!movementHandler.isPaused){
+                movementHandler.isWantedInterrupt = false
                 if(speaker.isInterruptQueued){
                     speakCurrent(context, robot)
                 }
@@ -130,6 +133,7 @@ class Tourscreen(private val context: Activity,
                 if(speaker.lastStatus != TtsRequest.Status.COMPLETED) speakCurrent(context, robot)
             }
             else {
+                movementHandler.isWantedInterrupt = true
                 lastTimeStamp = Instant.now()
                 if(speaker.lastStatus !== TtsRequest.Status.COMPLETED)speaker.isInterruptQueued = true
                 asyncGoBackTask()
@@ -198,7 +202,7 @@ class Tourscreen(private val context: Activity,
                     while (true){
                         delay(200)
                         if(isAlertDisplayed){
-                            break
+                            continue
                         }
                         if(speaker.lastStatus === TtsRequest.Status.COMPLETED ||
                         youtubeHandlers.any{ it.isRunning}) {
@@ -288,15 +292,22 @@ class Tourscreen(private val context: Activity,
             } else if(!speaker.hasInformed){
             GlobalScope.launch {
                 withContext(Dispatchers.Main) {
+                    while (true) {
+                        delay(200)
+                        if(isAlertDisplayed || movementHandler.isPaused || youtubeHandlers.any{ it.isRunning}) continue
+                        break
+                    }
                     val next = listOf("Wenn ihr hier noch bleiben wollt, drückt auf Den Pause Knopf.", "Ende dieser Station", "-1")
                     speaker.hasInformed = true
+
                     speak(robot, next[0])
                     delay(8000)
                     if(cIndex == movementHandler.index) {
                         while(true){
                             delay(200)
-                            if(cIndex != movementHandler.index  || isAlertDisplayed) break
-                            if( movementHandler.isPaused) continue
+                            if(cIndex != movementHandler.index ) break
+                            if( movementHandler.isPaused ||
+                                isAlertDisplayed) continue
                             proceedToNextStop()
                             break
                         }
@@ -348,6 +359,16 @@ class Tourscreen(private val context: Activity,
                     withContext(Dispatchers.Main) {
                         imageView.setImageBitmap(bitmap)
                         images.addView(imageView)
+                        imageView.setOnClickListener {
+                            val yt = YoutubeVideoDialogue(context)
+                            yt.show()
+                            isAlertDisplayed = true
+                            yt.findViewById<ImageView>(R.id.mainImageView).setImageBitmap(bitmap)
+                            yt.findViewById<ImageButton>(R.id.destroyImageView).setOnClickListener {
+                                yt.dismiss()
+                            }
+                            yt.setOnDismissListener { isAlertDisplayed = false }
+                        }
                     }
                 }
             }

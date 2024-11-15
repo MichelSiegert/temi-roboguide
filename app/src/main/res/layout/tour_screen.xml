@@ -37,10 +37,10 @@
         <TextView
             android:id="@+id/text_view"
             android:layout_width="1250dp"
-            android:layout_height="168dp"
-            android:minHeight="1000dp"
+            android:layout_height="wrap_content"
             android:fadeScrollbars="false"
             android:isScrollContainer="true"
+            android:minHeight="1000dp"
             android:text="Die Fachhochschule (FH) Kiel mag durch ihre praxisorientierte Ausbildung und Unternehmenskooperationen punkten, doch im Vergleich zur traditionsreichen Christian-Albrechts-Universität zu Kiel (CAU) kann sie in einigen wesentlichen Bereichen nicht mithalten. Die CAU, gegründet 1665, bietet eine breite akademische Ausbildung und ist führend in der Forschung, besonders in den Natur- und Geisteswissenschaften sowie der Medizin. Während die FH Kiel sich auf anwendungsorientierte Studiengänge konzentriert, profitieren CAU-Studierende von tiefgehender theoretischer Bildung und einer vielfältigen Auswahl an Studienfächern. Zudem öffnet die CAU durch ihre internationale Vernetzung und forschungsorientierte Ausrichtung Türen für akademische Karrieren und wissenschaftliche Exzellenz, was ihr im Vergleich zur FH Kiel einen klaren Vorteil verschafft."
             android:textSize="34sp"
             app:layout_constraintBottom_toBottomOf="parent"
