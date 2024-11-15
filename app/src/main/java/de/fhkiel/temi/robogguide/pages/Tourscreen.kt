@@ -51,6 +51,7 @@ class Tourscreen(private val context: Activity,
     private val youtubeHandlers: MutableList<YoutubePlayerListener>  = mutableListOf()
     private var lastTimeStamp = Instant.now()
     private var isAlertDisplayed = false
+    private lateinit var pics: Array<String>
 
     init {
         context.setContentView(R.layout.tour_screen)
@@ -69,7 +70,6 @@ class Tourscreen(private val context: Activity,
             movementHandler.isWantedInterrupt = true
             robot.stopMovement()
             robot.cancelAllTtsRequests()
-            movementHandler.isWantedInterrupt = false
             movementHandler.isPaused = true
             val goingBackDialogue = GoingBackDialogue(context)
             goingBackDialogue.show()
@@ -84,6 +84,8 @@ class Tourscreen(private val context: Activity,
 
                 goingBackDialogue.dismiss()
                 isAlertDisplayed = false
+                movementHandler.isWantedInterrupt = false
+
             }
             goingBackDialogue.findViewById<Button>(R.id.lastLocation).setOnClickListener{
                 movementHandler.queue.clear()
@@ -96,6 +98,8 @@ class Tourscreen(private val context: Activity,
 
                 goingBackDialogue.dismiss()
                 isAlertDisplayed = false
+                movementHandler.isWantedInterrupt = false
+
             }
             goingBackDialogue.findViewById<Button>(R.id.Leave).setOnClickListener{
                 movementHandler.isPaused = false
@@ -103,6 +107,8 @@ class Tourscreen(private val context: Activity,
                 pauseButton.setImageResource(R.drawable.pause)
                 handleBackAction()
                 goingBackDialogue.dismiss()
+                movementHandler.isWantedInterrupt = false
+
             }
         }
 
@@ -252,9 +258,7 @@ class Tourscreen(private val context: Activity,
 
                         if(movementHandler.isPaused) continue
                         if(youtubeHandlers.any{ it.isRunning} ) continue
-                        if(lastTimeStamp.plusSeconds(8).isAfter(Instant.now())) continue
                         youtubeHandlers.clear()
-
                         processTourQueue()
                         break
                 }
@@ -306,7 +310,8 @@ class Tourscreen(private val context: Activity,
     @SuppressLint("SetJavaScriptEnabled")
     private fun loadImages(id: String){
         val images = context.findViewById<LinearLayout>(R.id.img)
-        val pics = database.getMediaOfText(id)
+        pics = database.getMediaOfText(id)
+
         images?.removeAllViews()
         for (url in pics) {
             if(url.contains("youtube.com/")){

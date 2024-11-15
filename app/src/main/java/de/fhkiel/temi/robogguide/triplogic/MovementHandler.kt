@@ -38,8 +38,9 @@ class MovementHandler(
         descriptionId: Int,
         description: String) {
         lastLocationStatus = status
-        if(isWantedInterrupt &&(descriptionId == 1003 || descriptionId == 1004 || descriptionId == 1005))  {
+        if(!isWantedInterrupt &&(descriptionId == 1003 || descriptionId == 1004 || descriptionId == 1005))  {
             mRobot.cancelAllTtsRequests()
+            mRobot.stopMovement()
 
             val customDialog = FailedPathingDialogue(activity)
             customDialog.show()

@@ -80,7 +80,7 @@
                 android:background="#126416"
                 android:clickable="true"
                 android:padding="20dp"
-                android:text="Anfang diesen Ort von Vorne."
+                android:text="Diesen Ort von Vorne"
                 android:textColor="#ffffff"
                 android:textSize="34sp"
                 android:textStyle="bold"

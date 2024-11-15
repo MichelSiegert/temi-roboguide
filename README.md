@@ -3,7 +3,7 @@ Es gibt folgende Screens:
 
 ## Installation
 Folgt einfach der Installation von https://github.com/robotemi/sdk.
-Alternativ nutzt es die Android SDK version 35.
+   Alternativ nutzt es die Android SDK version 35.
 Gradle version 8.10.1
 
 
