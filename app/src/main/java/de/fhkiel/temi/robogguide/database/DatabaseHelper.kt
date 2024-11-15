@@ -268,7 +268,7 @@ class   DatabaseHelper(context: Context, private val databaseName: String) : SQL
                         "FROM transfers " +
                         "INNER JOIN a ON transfers.location_to = a.id " +
                         "INNER JOIN texts ON texts.transfers_id = transfers.id " +
-                        "ORDER BY texts.detailed  "+if(isAusführlich)"DESC " else "ASC " +
+                        "ORDER BY texts.detailed  "+(if(isAusführlich)"DESC " else "ASC ")+
                         "LIMIT 1",
                 arrayOf(location)
             )

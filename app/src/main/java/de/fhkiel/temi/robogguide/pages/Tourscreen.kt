@@ -39,9 +39,9 @@ import java.time.Instant
 class Tourscreen(private val context: Activity,
                  private val robot: Robot,
                  private val handleInitScreen: () -> Unit,
-                 private val isAusführlich: Boolean = false,
                  private val locations : List<String>,
-) {
+                 private val isAusführlich: Boolean = false,
+                 ) {
     private val database = DatabaseHandler.getDb()!!
     private val movementHandler = MovementHandler(robot, 0, locations, context, ::handleBackAction, ::tryAgain, ::proceedToNextStop, ::continueTourWhenReady, ::handleSpeechInterrupt)
     private val bar: ProgressBar
@@ -64,7 +64,6 @@ class Tourscreen(private val context: Activity,
          val backButton = context.findViewById<ImageButton>(R.id.backbutton)
         backButton.setOnClickListener {
             handleBackAction()
-            handleInitScreen()
         }
 
         val continueButton = context.findViewById<ImageButton>(R.id.continuebutton)
@@ -104,7 +103,8 @@ class Tourscreen(private val context: Activity,
     }
 
     private fun updateText(information: List<String>){
-            context.findViewById<TextView>(R.id.text_view)?.text = information[0]
+
+        context.findViewById<TextView>(R.id.text_view)?.text = information[0]
             context.findViewById<TextView>(R.id.title_view)?.text = information[1]
             loadImages(information[2])
     }
@@ -115,6 +115,7 @@ class Tourscreen(private val context: Activity,
         movementHandler.lastLocationStatus = "ABORT"
         movementHandler.isPaused = false
         speaker.lastStatus = TtsRequest.Status.STARTED
+        speaker.hasInformed = false
         robot.cancelAllTtsRequests()
 
         movementHandler.index = (if(isFirst) movementHandler.index else movementHandler.index+1)
@@ -129,7 +130,7 @@ class Tourscreen(private val context: Activity,
 
             val request = database.getTextsOfTransfer(locations[movementHandler.index], isAusführlich)
             if(request.all { it.isNotBlank() }){
-                updateText((request))
+                updateText(request)
                 speak(robot, request[0])
             } else {
                 updateText(database.getTextsOfLocation(locations[movementHandler.index], isAusführlich))
@@ -184,9 +185,7 @@ class Tourscreen(private val context: Activity,
                         step++
                     } else {
                         if (lastTimeStamp.plusSeconds(660).isAfter(Instant.now())) continue
-                        val initScreen = InitialScreen(context, robot)
-                        initScreen.handleInitScreen()
-                        robot.goTo(Routes.start)
+                        handleBackAction()
                         break
                     }
                 }
@@ -203,7 +202,7 @@ class Tourscreen(private val context: Activity,
         GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     while(true) {
-                        delay(8000)
+                        delay(if(!movementHandler.hasMovedRecently) 8000 else 2000)
                         if(!(movementHandler.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
                                     speaker.lastStatus == TtsRequest.Status.COMPLETED)) break
                         speaker.lastStatus = TtsRequest.Status.STARTED
@@ -223,6 +222,7 @@ class Tourscreen(private val context: Activity,
         if(speaker.lastStatus === TtsRequest.Status.COMPLETED) {
             speakCurrent(context, robot)
         }
+        movementHandler.hasMovedRecently = true
         robot.goTo(locations[movementHandler.index])
     }
 
@@ -237,10 +237,11 @@ class Tourscreen(private val context: Activity,
                 val cIndex = movementHandler.index
             if(isManual || movementHandler.index == locations.size - 1){
                 proceedToNextStop()
-            } else {
+            } else if(!speaker.hasInformed){
             GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     val next = listOf("Wenn ihr hier noch bleiben wollt, drückt auf Den Pause Knopf.", "Ende dieser Station", "-1")
+                    speaker.hasInformed = true
                     speak(robot, next[0])
                     delay(8000)
                     if(cIndex == movementHandler.index) {

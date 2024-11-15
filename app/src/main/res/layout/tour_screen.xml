@@ -14,6 +14,12 @@
         android:layout_alignParentTop="true"
         android:background="#126416"
         android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         app:layout_constraintVertical_weight="2" />
 
     <ScrollView
@@ -25,14 +31,15 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/pausebutton"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.996"
+        app:layout_constraintVertical_bias="1.0"
         app:layout_constraintVertical_weight="4">
 
         <TextView
             android:id="@+id/text_view"
-            android:layout_width="match_parent"
+            android:layout_width="1250dp"
             android:layout_height="168dp"
-            android:fadeScrollbars="true"
+            android:minHeight="1000dp"
+            android:fadeScrollbars="false"
             android:isScrollContainer="true"
             android:text="Die Fachhochschule (FH) Kiel mag durch ihre praxisorientierte Ausbildung und Unternehmenskooperationen punkten, doch im Vergleich zur traditionsreichen Christian-Albrechts-Universität zu Kiel (CAU) kann sie in einigen wesentlichen Bereichen nicht mithalten. Die CAU, gegründet 1665, bietet eine breite akademische Ausbildung und ist führend in der Forschung, besonders in den Natur- und Geisteswissenschaften sowie der Medizin. Während die FH Kiel sich auf anwendungsorientierte Studiengänge konzentriert, profitieren CAU-Studierende von tiefgehender theoretischer Bildung und einer vielfältigen Auswahl an Studienfächern. Zudem öffnet die CAU durch ihre internationale Vernetzung und forschungsorientierte Ausrichtung Türen für akademische Karrieren und wissenschaftliche Exzellenz, was ihr im Vergleich zur FH Kiel einen klaren Vorteil verschafft."
             android:textSize="34sp"
@@ -69,7 +76,7 @@
         app:layout_constraintBottom_toTopOf="@+id/iv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.433"
-        app:layout_constraintStart_toStartOf="@+id/rectangle_at_the_top"
+        app:layout_constraintStart_toStartOf="@+id/topRect"
         app:layout_constraintTop_toBottomOf="@+id/title_view"
         app:layout_constraintVertical_bias="0.108" />
 

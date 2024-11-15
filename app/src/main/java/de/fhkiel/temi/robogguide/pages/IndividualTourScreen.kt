@@ -71,9 +71,9 @@ class IndividualTourScreen(
                     activity,
                     mRobot,
                     handleInitScreen,
+                    customRoute,
                     isAusführlich = isAusführlich,
-                    customRoute
-                )
+                    )
                 tour.initializeTourScreen()
             }
         }

@@ -2,7 +2,6 @@ package de.fhkiel.temi.robogguide.triplogic
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.util.Log
 import android.widget.Toast
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.TtsRequest
@@ -20,6 +19,7 @@ class MovementHandler(
     private val fisnished: ()-> Any
 ) : OnGoToLocationStatusChangedListener {
     var isPaused = false
+    var hasMovedRecently = true
         var queue = mutableListOf<List<String>>()
     var lastLocationStatus: String = OnGoToLocationStatusChangedListener.START
 
@@ -33,7 +33,7 @@ class MovementHandler(
         descriptionId: Int,
         description: String) {
         lastLocationStatus = status
-        if(descriptionId == 1003 || descriptionId == 1004 )  {
+        if(descriptionId == 1003 || descriptionId == 1004 || descriptionId == 1005)  {
             mRobot.cancelAllTtsRequests()
 
             val builder = AlertDialog.Builder(activity)
