@@ -63,6 +63,8 @@ class Tourscreen(private val context: Activity,
 
          val backButton = context.findViewById<ImageButton>(R.id.backbutton)
         backButton.setOnClickListener {
+            movementHandler.isPaused = true
+
             handleBackAction()
         }
 
