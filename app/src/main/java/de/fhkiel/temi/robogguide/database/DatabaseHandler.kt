@@ -4,6 +4,9 @@ import android.content.Context
 import android.util.Log
 import java.io.IOException
 
+/**
+ * Creates a singleton of a database for the other processes, so It is easier to handle.
+ */
 object DatabaseHandler {
     var database: DatabaseHelper? = null
 

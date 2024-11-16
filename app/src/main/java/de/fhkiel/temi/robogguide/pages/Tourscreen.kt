@@ -40,8 +40,6 @@ import java.time.Instant
 
 /**
  * Handles the Tour.
- * **warning** the code here has many edge cases so the code is sometimes hard to read.
- *
  */
 class Tourscreen(private val context: Activity,
                  private val robot: Robot,
@@ -57,6 +55,7 @@ class Tourscreen(private val context: Activity,
     private var lastTimeStamp = Instant.now()
     private var isAlertDisplayed = false
     private lateinit var pics: Array<String>
+
 
     init {
         context.setContentView(R.layout.tour_screen)
@@ -94,7 +93,7 @@ class Tourscreen(private val context: Activity,
             //repeat this location.
             goingBackDialogue.findViewById<Button>(R.id.thisLocation).setOnClickListener{
                 movementHandler.queue.clear()
-                proceedToNextStop(true)
+                proceedToNextStop(true, true)
 
                 movementHandler.isPaused = false
                 val pauseButton =  context.findViewById<ImageButton>(R.id.pausebutton)
@@ -187,10 +186,10 @@ class Tourscreen(private val context: Activity,
     }
 
 
-    private fun proceedToNextStop(isFirst: Boolean = false){
+    private fun proceedToNextStop(isFirst: Boolean = false, isTriggeredByAgainButton: Boolean = false) {
         //setup
         movementHandler.queue.clear()
-        movementHandler.lastLocationStatus = "ABORT"
+        if(!isTriggeredByAgainButton)movementHandler.lastLocationStatus = "ABORT"
         movementHandler.isPaused = false
         speaker.lastStatus = TtsRequest.Status.STARTED
         speaker.hasInformed = false
@@ -209,7 +208,7 @@ class Tourscreen(private val context: Activity,
 
             val request = database.getTextsOfTransfer(locations[movementHandler.index], isAusführlich)
             //display the text of the location
-            if(request.all { it.isNotBlank() }){
+            if(!isTriggeredByAgainButton && request.all { it.isNotBlank() }){
                 updateText(request)
                 speak(robot, request[0])
             } else {
@@ -221,7 +220,8 @@ class Tourscreen(private val context: Activity,
             movementHandler.queue.add(database.getTextsOfLocation(locations[movementHandler.index], isAusführlich))
             movementHandler.queue.addAll(database.getTextsOfItems(locations[movementHandler.index], isAusführlich))
             // start walking.
-            robot.goTo(locations[movementHandler.index], false)
+        if(!isTriggeredByAgainButton)robot.goTo(locations[movementHandler.index], false)
+        else {processTourQueue(true)}
         }
     }
 
@@ -237,7 +237,7 @@ class Tourscreen(private val context: Activity,
                     while (true){
                         delay(200)
                         if(isAlertDisplayed){
-                            continue
+                            break
                         }
                         if(speaker.lastStatus === TtsRequest.Status.COMPLETED ||
                         youtubeHandlers.any{ it.isRunning}) {
@@ -343,13 +343,13 @@ class Tourscreen(private val context: Activity,
                     speaker.hasInformed = true
 
                     speak(robot, next[0])
-                    delay(8000)
+                    val t= Instant.now().plusSeconds(8)
                     if(cIndex == movementHandler.index) {
                         while(true){
                             delay(200)
-                            if(cIndex != movementHandler.index ) break
-                            if( movementHandler.isPaused ||
-                                isAlertDisplayed) continue
+                            if(cIndex != movementHandler.index || isAlertDisplayed) break
+                            if( movementHandler.isPaused) continue
+                            if(t.isAfter(Instant.now())) continue
                             proceedToNextStop()
                             break
                         }

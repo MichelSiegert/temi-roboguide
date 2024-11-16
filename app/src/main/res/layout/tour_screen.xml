@@ -75,8 +75,7 @@
         android:progressTint="#DFFF80"
         app:layout_constraintBottom_toTopOf="@+id/iv"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.433"
-        app:layout_constraintStart_toStartOf="@+id/topRect"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_view"
         app:layout_constraintVertical_bias="0.108" />
 

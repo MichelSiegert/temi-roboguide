@@ -2,16 +2,20 @@
 Es gibt folgende Screens:
 
 ## Installation
-Folgt einfach der Installation von https://github.com/robotemi/sdk.
-   Alternativ nutzt es die Android SDK version 35.
-Gradle version 8.10.1
+targetSdk 34
+minSdk 30
+und nutzt die library 'com.pierfrancescosoffritti.androidyoutubeplayer:core:11.0.1'
+falls sie Probleme haben,
+Folgen sie  einfach der Installation hier https://github.com/robotemi/sdk.
+
+
 
 ## Kommentare
 Einige funktionen werden beschrieben. 
 Andere sind trivial oder offensichtlich.
 LocationToggleManager.populateLocationToggles() ist hinreichend komplex, und wird bsp grob beschrieben.
 Funktionen wie LocationToggleManager.resizeBitmap() werden nicht  erklärt, da die funktionalität offensichtlich ist.
-
+Kommentare wurden im nachhinein für die zukünftigen personen geadded.
 ## Screens/Bildschirme
 - First_screenv
 - individual_tour_planner
