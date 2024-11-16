@@ -5,6 +5,7 @@ import YoutubeVideoDialogue
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Color
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
@@ -167,7 +168,6 @@ class Tourscreen(private val context: Activity,
         }
     }
 
-
     // cancel everything when the screen is left.
     private fun handleBackAction() {
         handleInitScreen()
@@ -184,7 +184,6 @@ class Tourscreen(private val context: Activity,
             context.findViewById<TextView>(R.id.title_view)?.text = information[1]
             loadImages(information[2])
     }
-
 
     private fun proceedToNextStop(isFirst: Boolean = false, isTriggeredByAgainButton: Boolean = false) {
         //setup
@@ -285,6 +284,7 @@ class Tourscreen(private val context: Activity,
     //continue the tour when it stopped moving and stopped talking.
     @OptIn(DelicateCoroutinesApi::class)
     private fun continueTourWhenReady(){
+        Log.i("weee", movementHandler.lastLocationStatus+ " " + speaker.lastStatus + " "+movementHandler.isPaused)
         if (movementHandler.isPaused) return
         if (!(movementHandler.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
                         speaker.lastStatus == TtsRequest.Status.COMPLETED)) return
@@ -295,10 +295,10 @@ class Tourscreen(private val context: Activity,
                         delay(if(!movementHandler.hasMovedRecently) 8000 else 2000)
                         if(!(movementHandler.lastLocationStatus == OnGoToLocationStatusChangedListener.COMPLETE &&
                                     speaker.lastStatus == TtsRequest.Status.COMPLETED)) break
-                        speaker.lastStatus = TtsRequest.Status.STARTED
-
+                        if(isAlertDisplayed) continue
                         if(movementHandler.isPaused) continue
                         if(youtubeHandlers.any{ it.isRunning} ) continue
+                        speaker.lastStatus = TtsRequest.Status.STARTED
                         youtubeHandlers.clear()
                         processTourQueue()
                         break

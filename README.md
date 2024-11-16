@@ -16,6 +16,10 @@ Andere sind trivial oder offensichtlich.
 LocationToggleManager.populateLocationToggles() ist hinreichend komplex, und wird bsp grob beschrieben.
 Funktionen wie LocationToggleManager.resizeBitmap() werden nicht  erklärt, da die funktionalität offensichtlich ist.
 Kommentare wurden im nachhinein für die zukünftigen personen geadded.
+Die kommentare wurden im nachhinein geadded, da der Programmierer folgende meinungen vertreten hat, die in diesem Video gut vertreten werden: https://www.youtube.com/watch?v=Bf7vDBBOBUA
+
+
+
 ## Screens/Bildschirme
 - First_screenv
 - individual_tour_planner
