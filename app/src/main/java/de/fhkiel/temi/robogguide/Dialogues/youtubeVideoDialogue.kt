@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.Window
 import de.fhkiel.temi.robogguide.R
 
+//creates a dialog
 class YoutubeVideoDialogue(context: Context) : Dialog(context) {
 
     init {

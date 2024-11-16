@@ -10,6 +10,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
+// save the evaluation.
 fun saveToFile(context: Context, fileContent: String) {
     val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
     val fileName = "$today.txt"

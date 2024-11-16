@@ -21,6 +21,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
 
+/**
+ * Allows the user to generate the indiv tour screen.
+ */
 class IndividualTourScreen(
                         private val activity: Activity,
                         private val mRobot: Robot,
@@ -32,10 +35,11 @@ class IndividualTourScreen(
     fun updateTimestamp(){
         lastTimeStamp = Instant.now()
         step=0
-
-        Log.i("weee",lastTimeStamp.toString())
     }
 
+    /**
+     * This handles all business in the indiv screen.
+     */
     fun handleIndivTourScreen() {
         activity.setContentView(R.layout.individual_tour_planner)
         asyncGoBackTask()
@@ -79,6 +83,9 @@ class IndividualTourScreen(
         }
     }
 
+    /**
+     * this function tracks if the user makes inputs. if not the robot will say things and drive back after a while.
+     */
     @OptIn(DelicateCoroutinesApi::class)
     fun asyncGoBackTask(){
 

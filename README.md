@@ -6,8 +6,11 @@ Folgt einfach der Installation von https://github.com/robotemi/sdk.
    Alternativ nutzt es die Android SDK version 35.
 Gradle version 8.10.1
 
-
-
+## Kommentare
+Einige funktionen werden beschrieben. 
+Andere sind trivial oder offensichtlich.
+LocationToggleManager.populateLocationToggles() ist hinreichend komplex, und wird bsp grob beschrieben.
+Funktionen wie LocationToggleManager.resizeBitmap() werden nicht  erklärt, da die funktionalität offensichtlich ist.
 
 ## Screens/Bildschirme
 - First_screenv

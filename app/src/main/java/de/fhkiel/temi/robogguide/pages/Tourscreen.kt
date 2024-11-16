@@ -5,7 +5,6 @@ import YoutubeVideoDialogue
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Color
-import android.util.Log
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
@@ -39,6 +38,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
 
+/**
+ * Handles the Tour.
+ * **warning** the code here has many edge cases so the code is sometimes hard to read.
+ *
+ */
 class Tourscreen(private val context: Activity,
                  private val robot: Robot,
                  private val handleInitScreen: () -> Unit,
@@ -60,22 +64,34 @@ class Tourscreen(private val context: Activity,
         robot.addTtsListener(speaker)
     }
 
+    /**
+     * Init the tour screen
+     */
     @SuppressLint("SetJavaScriptEnabled")
     fun initializeTourScreen() {
 
         robot.addOnGoToLocationStatusChangedListener(movementHandler)
+        //begin the tour
         proceedToNextStop(true)
 
-         val backButton = context.findViewById<ImageButton>(R.id.backbutton)
+        val backButton = context.findViewById<ImageButton>(R.id.backbutton)
+
+        //Create dialog on back button.
         backButton.setOnClickListener {
+
+            //stop whatever the robot is doing
             movementHandler.isWantedInterrupt = true
             robot.stopMovement()
             robot.cancelAllTtsRequests()
             movementHandler.isPaused = true
+
+            //create dialog
             val goingBackDialogue = GoingBackDialogue(context)
             goingBackDialogue.show()
             goingBackDialogue.setOnDismissListener { isAlertDisplayed = false }
             isAlertDisplayed = true
+
+            //repeat this location.
             goingBackDialogue.findViewById<Button>(R.id.thisLocation).setOnClickListener{
                 movementHandler.queue.clear()
                 proceedToNextStop(true)
@@ -89,6 +105,8 @@ class Tourscreen(private val context: Activity,
                 movementHandler.isWantedInterrupt = false
 
             }
+
+            // go to previous location
             goingBackDialogue.findViewById<Button>(R.id.lastLocation).setOnClickListener{
                 movementHandler.queue.clear()
                 movementHandler.index = (movementHandler.index - 1).coerceAtLeast(0)
@@ -103,6 +121,8 @@ class Tourscreen(private val context: Activity,
                 movementHandler.isWantedInterrupt = false
 
             }
+
+            // Ending the tour
             goingBackDialogue.findViewById<Button>(R.id.Leave).setOnClickListener{
                 movementHandler.isPaused = false
                 val pauseButton =  context.findViewById<ImageButton>(R.id.pausebutton)
@@ -119,9 +139,13 @@ class Tourscreen(private val context: Activity,
             processTourQueue(true)
         }
 
+
+        //pausing the tour also has edge cases
         val pauseButton =  context.findViewById<ImageButton>(R.id.pausebutton)
         pauseButton.setOnClickListener{
             movementHandler.isPaused  = !movementHandler.isPaused
+
+            //unpause tour
             if(!movementHandler.isPaused){
                 movementHandler.isWantedInterrupt = false
                 if(speaker.isInterruptQueued){
@@ -131,8 +155,8 @@ class Tourscreen(private val context: Activity,
                 pauseButton.setImageResource(R.drawable.pause)
                 robot.goTo(locations[movementHandler.index], false)
                 if(speaker.lastStatus != TtsRequest.Status.COMPLETED) speakCurrent(context, robot)
-            }
-            else {
+                // Pause tour
+            } else {
                 movementHandler.isWantedInterrupt = true
                 lastTimeStamp = Instant.now()
                 if(speaker.lastStatus !== TtsRequest.Status.COMPLETED)speaker.isInterruptQueued = true
@@ -144,6 +168,8 @@ class Tourscreen(private val context: Activity,
         }
     }
 
+
+    // cancel everything when the screen is left.
     private fun handleBackAction() {
         handleInitScreen()
         robot.removeOnGoToLocationStatusChangedListener(movementHandler)
@@ -152,12 +178,14 @@ class Tourscreen(private val context: Activity,
         speak(robot,  "Okay! Ich gehe dann wieder zum Anfang. Viel Spaß im Museum!")
     }
 
+    //Loading the images, videos and texts.
     private fun updateText(information: List<String>){
 
         context.findViewById<TextView>(R.id.text_view)?.text = information[0]
             context.findViewById<TextView>(R.id.title_view)?.text = information[1]
             loadImages(information[2])
     }
+
 
     private fun proceedToNextStop(isFirst: Boolean = false){
         //setup
@@ -170,6 +198,7 @@ class Tourscreen(private val context: Activity,
 
         movementHandler.index = (if(isFirst) movementHandler.index else movementHandler.index+1)
 
+        // is the tour over?
         if(movementHandler.index == locations.size){
             robot.removeOnGoToLocationStatusChangedListener(movementHandler)
             robot.removeTtsListener(speaker)
@@ -179,19 +208,25 @@ class Tourscreen(private val context: Activity,
             bar.progress = movementHandler.index * 100 / locations.size
 
             val request = database.getTextsOfTransfer(locations[movementHandler.index], isAusführlich)
+            //display the text of the location
             if(request.all { it.isNotBlank() }){
                 updateText(request)
                 speak(robot, request[0])
             } else {
+                //if the transfer is empty show the text of the location.
                 updateText(database.getTextsOfLocation(locations[movementHandler.index], isAusführlich))
                 speaker.lastStatus = TtsRequest.Status.COMPLETED
             }
+            //Add things to the queue.
             movementHandler.queue.add(database.getTextsOfLocation(locations[movementHandler.index], isAusführlich))
             movementHandler.queue.addAll(database.getTextsOfItems(locations[movementHandler.index], isAusführlich))
+            // start walking.
             robot.goTo(locations[movementHandler.index], false)
         }
     }
 
+
+    // if the speaking was interrupted wait until the speaker is done and than repeat what you tried to say before.
     @OptIn(DelicateCoroutinesApi::class)
     private fun handleSpeechInterrupt() {
         if(speaker.lastStatus != TtsRequest.Status.COMPLETED &&
@@ -216,6 +251,7 @@ class Tourscreen(private val context: Activity,
         }
     }
 
+    //if the tour gets abandoned and paused say some things and then go back.
     @OptIn(DelicateCoroutinesApi::class)
     fun asyncGoBackTask() {
         GlobalScope.launch {
@@ -246,6 +282,7 @@ class Tourscreen(private val context: Activity,
         }
     }
 
+    //continue the tour when it stopped moving and stopped talking.
     @OptIn(DelicateCoroutinesApi::class)
     private fun continueTourWhenReady(){
         if (movementHandler.isPaused) return
@@ -278,6 +315,11 @@ class Tourscreen(private val context: Activity,
         robot.goTo(locations[movementHandler.index])
     }
 
+    /**
+     * tour goes through the queue. if the last thing was said it announces that it will move soon.
+     * if it doesnt get paused it will then try to proceed to the next stop of the tour or end the
+     * if all stations have been visited.
+     */
     @OptIn(DelicateCoroutinesApi::class)
     private fun processTourQueue(isManual :Boolean = false) {
         speaker.lastStatus = TtsRequest.Status.STARTED
@@ -318,6 +360,8 @@ class Tourscreen(private val context: Activity,
     }
 }
 
+
+    // load the media.
     @SuppressLint("SetJavaScriptEnabled")
     private fun loadImages(id: String){
         val images = context.findViewById<LinearLayout>(R.id.img)
@@ -360,6 +404,7 @@ class Tourscreen(private val context: Activity,
                         imageView.setImageBitmap(bitmap)
                         images.addView(imageView)
                         imageView.setOnClickListener {
+                            //this dialogue only shows for images.
                             val yt = YoutubeVideoDialogue(context)
                             yt.show()
                             isAlertDisplayed = true

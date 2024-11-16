@@ -9,6 +9,9 @@ import com.robotemi.sdk.TtsRequest
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener
 import de.fhkiel.temi.robogguide.R
 
+// Handles the things related to the movement during the tour.
+// some of its logic is in the Tourscreen as it is needed in multiple places.
+// hence the big amount of function pointers.
 class MovementHandler(
     private val mRobot: Robot,
     var index: Int = 0,
@@ -17,7 +20,6 @@ class MovementHandler(
     private val backFunction: () -> Any,
     private val tryAgainFunction: () -> Any,
     private val continueFunction: () -> Any,
-
     private val tourProgress: () -> Any,
     private val fisnished: ()-> Any
 ) : OnGoToLocationStatusChangedListener {

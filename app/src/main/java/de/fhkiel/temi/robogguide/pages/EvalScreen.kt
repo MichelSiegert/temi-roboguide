@@ -17,6 +17,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
 
+/**
+ * Screen to evaluate the tour.
+ */
 class EvalScreen(
     private val context: Activity,
     private val robot: Robot,

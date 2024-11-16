@@ -6,6 +6,8 @@ import android.util.Log
 import java.net.HttpURLConnection
 import java.net.URL
 
+
+// create  bitmap from url.
 fun downloadImage(urlString: String): Bitmap? {
     try {
         val url = URL(urlString)

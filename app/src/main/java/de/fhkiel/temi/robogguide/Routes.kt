@@ -15,7 +15,8 @@ object Routes {
             route = calculateRoute(robot)
             importantRoute= calculateImportantRoute(route.toTypedArray())
     }
-
+    // calculates the route from transfers.
+    //throws errors if the code is not in line with the description in the readme.
     private fun calculateRoute(robot:Robot): List<String> {
 
         map = database.getLocationMap()
@@ -61,6 +62,7 @@ object Routes {
         return route.toList()
     }
 
+    //calculates the important route from the normal
     private fun calculateImportantRoute(route: Array<String>): List<String> {
         val locations  =database.getAllImportantStations()
         val importantRoute = route.filter { locations.contains(it) }

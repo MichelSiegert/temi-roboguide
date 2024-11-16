@@ -22,9 +22,12 @@ import kotlinx.coroutines.withContext
 class LocationToggleManager(private val context: Context, private val mRobot: Robot?) {
     val toggledList = mutableListOf<String>()
 
+
+    /**
+     * Creates the toggleable buttons and adds them to a gridview.
+     * It Resizes them to be clickable.
+     */
     fun populateLocationToggles(layout: GridLayout, updateTimestamp: () -> Unit) {
-
-
         val db = DatabaseHandler.getDb()!!
         mRobot?.locations?.forEach { location ->
             if( Routes.map.filter { it.value == location}.toList().isEmpty()) return

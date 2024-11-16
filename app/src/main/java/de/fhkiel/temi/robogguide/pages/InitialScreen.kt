@@ -6,10 +6,18 @@ import com.robotemi.sdk.Robot
 import de.fhkiel.temi.robogguide.R
 import de.fhkiel.temi.robogguide.Routes
 
+
+/**
+ * Renders the first screen
+ */
 class InitialScreen(
     private val context: Activity,
     private val robot: Robot) {
 
+
+    /**
+     * draws the first screen and sets the listeners of the buttons.
+     */
     fun handleInitScreen() {
         context.setContentView(R.layout.first_screen)
         context.findViewById<Button>(R.id.individual)?.setOnClickListener {

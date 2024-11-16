@@ -5,10 +5,12 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
 
+//splits of ids from links. Note that this does not work on every link but on the simpelest.
 fun getID(url: String): String{
 return url.split("=")[1]
 }
 
+// handles things related to the youtube player.
 class YoutubePlayerListener : YouTubePlayerListener {
 
     var isRunning: Boolean = false;

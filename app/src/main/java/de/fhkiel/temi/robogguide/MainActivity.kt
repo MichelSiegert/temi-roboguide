@@ -10,12 +10,14 @@ import de.fhkiel.temi.robogguide.database.DatabaseHandler
 import de.fhkiel.temi.robogguide.pages.InitialScreen
 
 
+
     class MainActivity : AppCompatActivity(), OnRobotReadyListener {
     private var mRobot: Robot? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.first_screen)
+        // I use a singleton to handle the db instead.
         DatabaseHandler.init(this)
     }
 
@@ -35,6 +37,7 @@ import de.fhkiel.temi.robogguide.pages.InitialScreen
         DatabaseHandler.onDestroy()
     }
 
+        //start the robot in the correct screen, and let it drive to the first location.
     override fun onRobotReady(isReady: Boolean) {
         if (isReady){
             mRobot = Robot.getInstance()
